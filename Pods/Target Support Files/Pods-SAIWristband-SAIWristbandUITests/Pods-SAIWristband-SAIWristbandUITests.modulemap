@@ -1,0 +1,6 @@
+framework module Pods_SAIWristband_SAIWristbandUITests {
+  umbrella header "Pods-SAIWristband-SAIWristbandUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
