@@ -20,12 +20,6 @@ struct TimelineSection: View {
                     .foregroundColor(.black)
                 
                 Spacer()
-                
-                Button(action: {}) {
-                    Image(systemName: "plus")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(Color(red: 0.4, green: 0.26, blue: 0.65))
-                }
             }
             
             // 带圆角带阴影的内容容器
@@ -79,15 +73,18 @@ struct TimelineEventCard: View {
     
     @ViewBuilder
     private func getTimelineIcon() -> some View {
-        // 根据事件类型显示不同的时间线图片
-        let iconName = getTimelineIconName()
-        
-        if let iconImage = UIImage(named: iconName) {
+        // 优先使用事件自带图片作为时间线左侧图标
+        if let imageName = event.image, let uiImage = UIImage(named: imageName) {
+            Image(uiImage: uiImage)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+        } else if let iconImage = UIImage(named: getTimelineIconName()) {
+            // 其次根据事件类型显示预设时间线图片
             Image(uiImage: iconImage)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
         } else {
-            // 如果找不到图片，使用默认的圆形背景 + 系统图标
+            // 兜底：如果找不到图片，使用默认的圆形背景
             Circle()
                 .fill(event.isActive ? Color(red: 0.4, green: 0.26, blue: 0.65) : Color.white)
                 .overlay(
@@ -135,25 +132,6 @@ struct TimelineEventCard: View {
             
             // 右侧：图片和内容在同一行，Y轴居中对齐
             HStack(alignment: .center, spacing: 10) {
-                // 图片
-                if let imageName = event.image {
-                    AsyncImage(url: Bundle.main.url(forResource: imageName, withExtension: "png")) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } placeholder: {
-                        // 根据图标类型显示不同的占位符
-                        Image(systemName: event.icon)
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(getIconColor())
-                            .frame(width: 32, height: 32)
-                            .background(Color.gray.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                    }
-                    .frame(width: 32, height: 32)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-                }
-                
                 // 文字内容
                 VStack(alignment: .leading) {
                     Text(event.title)
@@ -217,7 +195,7 @@ struct TimelineBottomButton: View {
         HStack {
             Spacer()
             
-            Button(action: {}) {
+            NavigationLink(destination: FullTimelineView()) {
                 HStack(spacing: 8) {
                     Image(systemName: "calendar")
                         .font(.system(size: 20, weight: .medium))

@@ -15,6 +15,7 @@ struct HapticFeedback {
 }
 
 struct LoginView: View {
+    @EnvironmentObject var appState: AppState
     @State private var emailOrMobile = ""
     @State private var password = ""
     @State private var isLoading = false
@@ -190,13 +191,15 @@ struct LoginView: View {
         // 触觉反馈
         HapticFeedback.impact.impactOccurred()
         
-        // 简单验证
-        guard !emailOrMobile.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        // 校验管理员账号（本地写死）
+        let trimmedAccount = emailOrMobile.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedPassword = password
+        
+        guard !trimmedAccount.isEmpty else {
             showErrorMessage("Please enter your email or mobile number")
             return
         }
-        
-        guard !password.isEmpty else {
+        guard !trimmedPassword.isEmpty else {
             showErrorMessage("Please enter your password")
             return
         }
@@ -205,14 +208,19 @@ struct LoginView: View {
         isLoading = true
         focusedField = nil
         
-        // 模拟网络请求
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            isLoading = false
-            
-            // 模拟登录成功
-            HapticFeedback.notification.notificationOccurred(.success)
-            print("登录: \(emailOrMobile)")
-            isLoggedIn = true
+        // 本地验证：只有管理员账号允许登录
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            if trimmedAccount.lowercased() == "admin" && trimmedPassword == "admin123" {
+                isLoading = false
+                HapticFeedback.notification.notificationOccurred(.success)
+                // 更新全局状态为管理员用户
+                let adminUser = User(id: "0", name: "Administrator", email: "admin@local", avatarURL: nil)
+                appState.login(user: adminUser)
+                isLoggedIn = true
+            } else {
+                isLoading = false
+                showErrorMessage("仅管理员账号可登录：账号 admin，密码 admin123")
+            }
         }
     }
     

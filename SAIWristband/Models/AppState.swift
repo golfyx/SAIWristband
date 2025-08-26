@@ -51,10 +51,10 @@ class AppState: ObservableObject {
     
     private func checkLoginStatus() {
         // 这里可以检查UserDefaults或Keychain中的登录状态
-        // 为了演示，我们硬编码为true，直接进入主页
-        self.isLoggedIn = true
-        self.currentUser = User.sampleUser
-        self.hasCompletedOnboarding = true
+        // 默认不登录，进入欢迎页
+        self.isLoggedIn = false
+        self.currentUser = nil
+        self.hasCompletedOnboarding = false
     }
     
     func login(user: User) {

@@ -18,81 +18,130 @@ struct WelcomeView: View {
             TabBarView()
         } else {
             ZStack {
-                // 背景颜色
-                Color.white
-                    .ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    // 上半部分 - 背景图片区域
-                    ZStack {
-                        // 背景图片 - 自适应尺寸，扩展到安全区域
-                        Image("welcome_background")
+                // 背景层 - 完全独立，不影响布局
+                Color.clear
+                    .background(
+                        Image("Image2")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .clipped()
-                            .ignoresSafeArea(.all, edges: .top) // 忽略顶部安全区域
+                    )
+                    .clipped()
+                    .ignoresSafeArea()
+                
+                // 内容层 - 不受背景影响的主要布局
+                VStack(spacing: 0) {
+                    // 文字内容区域
+                    VStack(alignment: .leading, spacing: 0) {
+                        Spacer()
                         
-                        // 渐变遮罩层
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color.black.opacity(0.3),
-                                Color.clear,
-                                Color.black.opacity(0.6)
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .ignoresSafeArea(.all, edges: .top)
+                        // 标题组 1: "Time for" / "Well-being"
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Time for")
+                                .font(.system(size: 48, weight: .black))
+                                .foregroundColor(.white)
+                            Text("Well-being")
+                                .font(.system(size: 48, weight: .black))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.leading, 11)
+                        
+                        // 标题组 2: "Elegance" / "Unfolds"
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Elegance")
+                                .font(.system(size: 48, weight: .black))
+                                .foregroundColor(.white)
+                            Text("Unfolds")
+                                .font(.system(size: 48, weight: .black))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.top, 50)
+                        .padding(.leading, 11)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Spacer()
                     }
                     
-                    // 固定间距：图片到按钮48像素
-                    Spacer()
-                        .frame(height: 88)
-                    
-                    // 按钮区域
+                    // 按钮和点的区域 - 固定在底部
                     VStack(spacing: 16) {
-                        // 登录按钮 - 硬编码登录
-                        CustomButton(
-                            title: "Log in",
-                            backgroundColor: Color(red: 0.6, green: 0.1, blue: 0.95), // #9A1AF2
-                            textColor: .white,
-                            action: {
-                                // 硬编码登录
-                                appState.login(user: User.sampleUser)
-                            }
-                        )
-                        .frame(width: UIScreen.main.bounds.width * 0.872) // 327/375 = 0.872，保持设计稿比例
+                        PrimaryButton(title: "Log in", width: 327, height: 48) {
+                            showingLogin = true
+                        }
                         
-                        // 注册按钮
-                        CustomButton(
-                            title: "Sign Up",
-                            backgroundColor: .clear,
-                            textColor: Color(red: 0.6, green: 0.1, blue: 0.95),
-                            borderColor: Color(red: 0.6, green: 0.1, blue: 0.95),
-                            action: {
-                                // 硬编码登录
-                                appState.login(user: User.sampleUser)
-                            }
-                        )
-                        .frame(width: UIScreen.main.bounds.width * 0.872)
+                        // 分页指示点
+                        HStack(spacing: 20) {
+                            PageDot(isActive: false, size: 12)  // 第一个点激活
+                            PageDot(isActive: false, size: 12)
+                            PageDot(isActive: false, size: 12)
+                        }
                     }
-                    
-                    // 固定间距：按钮到安全区域48像素
-                    Spacer()
-                        .frame(height: 48)
+                    .padding(.bottom, 20) // 距离底部的安全距离
                 }
             }
-            .onAppear {
-                // 2秒后自动登录，模拟启动界面
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    appState.login(user: User.sampleUser)
-                }
+            .fullScreenCover(isPresented: $showingLogin) {
+                LoginView(
+                    isLoggedIn: Binding(
+                        get: { appState.isLoggedIn },
+                        set: { appState.isLoggedIn = $0 }
+                    )
+                )
             }
         }
     }
 }
 
-// 自定义按钮组件
+// 自定义主按钮
+private struct PrimaryButton: View {
+    let title: String
+    let width: CGFloat
+    let height: CGFloat
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Spacer()
+                Text(title)
+                    .font(.system(size: 14, weight: .bold, design: .monospaced))
+                    .foregroundColor(.white)
+                Spacer()
+            }
+            .frame(width: width, height: height)
+            .background(Color(red: 123/255, green: 43/255, blue: 177/255)) // #7B2BB1
+            .cornerRadius(8)
+            .shadow(color: Color.black.opacity(0.16), radius: 4, x: 0, y: 2)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// 分页点
+private struct PageDot: View {
+    let isActive: Bool
+    let size: CGFloat
+    
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(Color.white)
+                .frame(width: size, height: size)
+            if isActive {
+                Circle()
+                    .fill(Color(red: 123/255, green: 43/255, blue: 177/255))
+                    .frame(width: size - 2, height: size - 2)
+            } else {
+                Circle()
+                    .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                    .frame(width: size - 2, height: size - 2)
+            }
+        }
+        .overlay(
+            Circle()
+                .stroke(Color.clear, lineWidth: 0)
+        )
+    }
+}
+
+// 旧的自定义按钮保留以兼容其他页面（未使用）
 struct CustomButton: View {
     let title: String
     let backgroundColor: Color

@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "los_angeles.png",
+        "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "los_angeles.png",
+        "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "los_angeles.png",
+        "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

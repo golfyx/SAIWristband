@@ -12,11 +12,11 @@ struct ContentView: View {
     
     var body: some View {
         Group {
-            if appState.isLoggedIn {
-                TabBarView()
-            } else {
+//            if appState.isLoggedIn {
+//                TabBarView()
+//            } else {
                 WelcomeView()
-            }
+//            }
         }
     }
 }

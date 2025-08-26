@@ -20,8 +20,11 @@ struct TabBarView: View {
                 HealthView()
                     .tag(1)
                 
-                SharingView()
-                    .tag(2)
+                NavigationView {
+                    SharingView()
+                }
+                .navigationViewStyle(StackNavigationViewStyle())
+                .tag(2)
             }
             
             // 自定义底部标签栏
@@ -120,20 +123,7 @@ struct HealthView: View {
     }
 }
 
-struct SharingView: View {
-    var body: some View {
-        VStack {
-            Text("Sharing")
-                .font(.largeTitle)
-                .padding()
-            Text("分享页面正在开发中...")
-                .font(.body)
-                .foregroundColor(.gray)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white)
-    }
-}
+// 所有SharingView相关组件现在都在独立的SharingView.swift文件中实现
 
 #Preview {
     TabBarView()

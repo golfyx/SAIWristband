@@ -13,6 +13,8 @@ struct HomeView: View {
     @State private var deviceInfo = DeviceInfo.sampleData
     @State private var showingProfile = false
     @State private var showingDeviceManagement = false
+    @State private var showingFloatingMenu = false
+    @State private var showingAdvisor = false
     
     var body: some View {
         NavigationView {
@@ -37,7 +39,10 @@ struct HomeView: View {
                         TestValueCardsSection()
                         
                         // 健康概要区域
-                        HealthSummarySection(healthData: healthData)
+                        HealthSummarySection(
+                            healthData: healthData,
+                            showingFloatingMenu: $showingFloatingMenu
+                        )
                         
                         // 时间线区域
                         TimelineSection(events: timelineEvents)
@@ -57,6 +62,17 @@ struct HomeView: View {
             .sheet(isPresented: $showingDeviceManagement) {
                 DeviceManagementView()
             }
+            .overlay(
+                FloatingActionMenu(
+                    isShowing: $showingFloatingMenu,
+                    showingAdvisor: $showingAdvisor,
+                    onDismiss: {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showingFloatingMenu = false
+                        }
+                    }
+                )
+            )
         }
     }
 }
@@ -141,6 +157,7 @@ struct CustomNavigationBar: View {
 // MARK: - 消息通知区域
 struct MessageNotificationView: View {
     @State private var showNotification = true
+    @State private var showingHealthApps = false
     
     var body: some View {
         VStack(spacing: 16) {
@@ -208,8 +225,7 @@ struct MessageNotificationView: View {
                         
                         // 继续按钮
                         Button(action: {
-                            // 处理继续逻辑
-                            print("Continue tapped")
+                            showingHealthApps = true
                         }) {
                             HStack {
                                 Spacer()
@@ -238,12 +254,16 @@ struct MessageNotificationView: View {
             }
             
         }
+        .sheet(isPresented: $showingHealthApps) {
+            HealthAppsView()
+        }
     }
 }
 
 // MARK: - 健康概要区域
 struct HealthSummarySection: View {
     let healthData: [HealthSummary]
+    @Binding var showingFloatingMenu: Bool
     
     var body: some View {
         VStack(spacing: 16) {
@@ -267,6 +287,25 @@ struct HealthSummarySection: View {
             VStack(spacing: 16) {
                 ForEach(healthData.indices, id: \.self) { index in
                     HealthSummaryCard(data: healthData[index])
+                }
+            }
+            
+            // 右下角加号按钮
+            HStack {
+                Spacer()
+                
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        showingFloatingMenu.toggle()
+                    }
+                }) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(Color(red: 0.4, green: 0.26, blue: 0.65))
+                        .frame(width: 44, height: 44)
+                        .background(Color(red: 0.84, green: 0.8, blue: 0.98))
+                        .clipShape(Circle())
+                        .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
                 }
             }
         }
@@ -470,4 +509,142 @@ struct TestValue {
 
 #Preview {
     HomeView()
+}
+
+// MARK: - 浮动操作菜单
+struct FloatingActionMenu: View {
+    @Binding var isShowing: Bool
+    @Binding var showingAdvisor: Bool
+    let onDismiss: () -> Void
+    @State private var showingVitalSigns = false
+    @State private var showingAddTag = false
+    @State private var showingMeditation = false
+    
+    var body: some View {
+        ZStack {
+            // 背景遮罩
+            if isShowing {
+                Color.black.opacity(0.6)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+            }
+            
+            // 浮动菜单
+            if isShowing {
+                VStack {
+                    Spacer()
+                    
+                    HStack {
+                        Spacer()
+                        
+                        VStack(spacing: 16) {
+                            // 菜单选项
+                            FloatingMenuItem(
+                                title: "Vital signs",
+                                icon: "pencil.and.wrench",
+                                action: {
+                                    showingVitalSigns = true
+                                    onDismiss()
+                                }
+                            )
+                            
+                            FloatingMenuItem(
+                                title: "Add a tag",
+                                icon: "tag",
+                                action: {
+                                    showingAddTag = true
+                                    onDismiss()
+                                }
+                            )
+                            
+                            FloatingMenuItem(
+                                title: "Advisor",
+                                icon: "stethoscope",
+                                action: {
+                                    showingAdvisor = true
+                                    onDismiss()
+                                }
+                            )
+                            
+                            FloatingMenuItem(
+                                title: "Meditation",
+                                icon: "figure.mind.and.body",
+                                action: {
+                                    showingMeditation = true
+                                    onDismiss()
+                                }
+                            )
+                            
+                            // 关闭按钮
+                            HStack {
+                                Spacer()
+                                
+                                Button(action: onDismiss) {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 20, weight: .medium))
+                                        .foregroundColor(.white)
+                                        .frame(width: 44, height: 44)
+                                        .background(Color.white.opacity(0.2))
+                                        .clipShape(Circle())
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 100) // 为底部导航栏留出空间
+                    }
+                }
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.8).combined(with: .opacity),
+                    removal: .scale(scale: 0.8).combined(with: .opacity)
+                ))
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: isShowing)
+        .sheet(isPresented: $showingVitalSigns) {
+            VitalSignsView()
+        }
+        .sheet(isPresented: $showingAddTag) {
+            AddTagView()
+        }
+        .sheet(isPresented: $showingAdvisor) {
+            AdvisorView()
+        }
+        .sheet(isPresented: $showingMeditation) {
+            MeditationView()
+        }
+    }
+}
+
+// MARK: - 浮动菜单项
+struct FloatingMenuItem: View {
+    let title: String
+    let icon: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Spacer()
+                
+                HStack(spacing: 12) {
+                    // 标题（左边）
+                    Text(title)
+                        .font(.system(size: 18, weight: .regular))
+                        .foregroundColor(.white)
+                        .frame(width: 120, alignment: .leading)
+                    
+                    // 图标（右边）
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundColor(.white)
+                        .frame(width: 43, height: 43)
+                        .background(Color.white.opacity(0.1))
+                        .clipShape(Circle())
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+            }
+        }
+    }
 }
