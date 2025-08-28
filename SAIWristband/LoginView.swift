@@ -152,7 +152,21 @@ struct LoginView: View {
                                 .font(.custom("OpenSans-Regular", size: scaled(14, scale)))
                                 .foregroundColor(Color(hex: "572D5F"))
                         }
+                        .padding(.bottom, scaled(15, scale))
+                        
+                        // 游客登录按钮
+                        Button(action: handleGuestLogin) {
+                            Text("Continue as Guest")
+                                .font(.custom("OpenSans-Regular", size: scaled(14, scale)))
+                                .foregroundColor(Color(hex: "9A1AF2"))
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 36 * scale)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .padding(.horizontal, scaled(43, scale))
                         .padding(.bottom, scaled(60, scale))
+                        .accessibilityLabel("Continue as Guest")
+                        .accessibilityHint("Double tap to enter the app without creating an account")
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 12 * scale)
@@ -235,6 +249,19 @@ struct LoginView: View {
         // 触觉反馈
         HapticFeedback.selection.selectionChanged()
         print("忘记密码")
+    }
+    
+    private func handleGuestLogin() {
+        // 触觉反馈
+        HapticFeedback.selection.selectionChanged()
+        
+        // 创建游客用户
+        let guestUser = User(id: "guest", name: "Guest User", email: "guest@local", avatarURL: nil)
+        
+        // 直接登录游客用户
+        HapticFeedback.notification.notificationOccurred(.success)
+        appState.login(user: guestUser)
+        isLoggedIn = true
     }
     
     private func showErrorMessage(_ message: String) {
