@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var appState: AppState
     @State private var userProfile = UserProfile.sampleData
     @State private var healthReport = HealthReport.sampleData
     @State private var healthMedals = HealthMedals.sampleData
@@ -16,7 +17,9 @@ struct ProfileView: View {
     @State private var records = RecordItem.sampleData
     @State private var reminder = Reminder.sampleData
     @State private var isReminderEnabled = true
+    @State private var showingLogoutAlert = false
     
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         GeometryReader { geometry in
             let screenWidth = geometry.size.width
@@ -27,11 +30,13 @@ struct ProfileView: View {
                     // 自定义导航栏
                     ProfileNavigationBar {
                         presentationMode.wrappedValue.dismiss()
+                    } onLogout: {
+                        showingLogoutAlert = true
                     }
                     
                     // 分割线
                     Rectangle()
-                        .fill(Color.gray.opacity(0.3))
+                        .fill(AppTheme.dividerColor(colorScheme))
                         .frame(height: 1)
                     
                     VStack(spacing: isPhone375 ? 20 : 24) {
@@ -58,8 +63,16 @@ struct ProfileView: View {
                     .padding(.bottom, 60) // 为TabBar留出空间
                 }
             }
-            .background(Color.white)
+            .background(AppTheme.background(colorScheme))
             .navigationBarHidden(true)
+            .alert("Confirm Logout", isPresented: $showingLogoutAlert) {
+                Button("Cancel", role: .cancel) { }
+                Button("Log Out", role: .destructive) {
+                    appState.logout()
+                }
+            } message: {
+                Text("Are you sure you want to log out?")
+            }
         }
     }
 }
@@ -67,6 +80,9 @@ struct ProfileView: View {
 // MARK: - 个人页面导航栏
 struct ProfileNavigationBar: View {
     let onBackTapped: () -> Void
+    let onLogout: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var isDarkMode = false
     
     var body: some View {
         HStack {
@@ -74,7 +90,7 @@ struct ProfileNavigationBar: View {
             Button(action: onBackTapped) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
             }
             
             Spacer()
@@ -82,57 +98,48 @@ struct ProfileNavigationBar: View {
             // 标题
             Text("Profile")
                 .font(.system(size: 18, weight: .regular))
-                .foregroundColor(.black)
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
             Spacer()
             
-            // 右侧图片按钮
-            Button(action: {
-                // 添加按钮点击动作
-            }) {
-                Image(systemName: "gearshape.fill")
+            // 右侧退出按钮
+            Button(action: onLogout) {
+                Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.system(size: 20))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
             }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
     }
 }
 
 // MARK: - 个人信息区域
 struct UserInfoSection: View {
     let userProfile: UserProfile
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
             // 上部分：头像和姓名
             HStack(alignment: .center, spacing: 16) {
                 // 头像
-                AsyncImage(url: Bundle.main.url(forResource: userProfile.avatarImage ?? "user_avatar", withExtension: "png")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Circle()
-                        .fill(Color(red: 0.84, green: 0.8, blue: 0.98))
-                        .overlay(
-                            Image(systemName: "person.fill")
-                                .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
-                        )
-                }
-                .frame(width: 55, height: 55)
-                .clipShape(Circle())
-                .overlay(
-                    Circle()
-                        .stroke(Color(red: 0.9, green: 0.91, blue: 0.92), lineWidth: 1)
-                )
+                Image("user_avatar")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipShape(Circle())
+                    .frame(width: 52, height: 51)
+                    .overlay(
+                        Circle()
+                            .stroke(AppTheme.separatorColor(colorScheme), lineWidth: 1)
+                    )
                 
                 // 姓名
                 Text(userProfile.name)
                     .font(.system(size: 24, weight: .regular))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
             }
@@ -143,7 +150,7 @@ struct UserInfoSection: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("\(userProfile.age)y，\(userProfile.height)cm，\(String(format: "%.1f", userProfile.weight))kg")
                         .font(.system(size: 12, weight: .regular))
-                        .foregroundColor(.black)
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                 }
                 
                 Spacer()
@@ -151,29 +158,35 @@ struct UserInfoSection: View {
                 // 右侧箭头
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12))
-                    .foregroundColor(Color(red: 0.6, green: 0.31, blue: 0.58))
+                    .foregroundColor(AppTheme.accent)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 13)
-                    .fill(Color(red: 0.8, green: 0.76, blue: 0.82).opacity(0.3))
+                    .fill(AppTheme.accent.opacity(0.15))
             )
         }
         .padding(16)
-        .background(Color(red: 0.97, green: 0.96, blue: 1.0))
+        .background(AppTheme.elevatedCardBackground(colorScheme))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(red: 0.76, green: 0.76, blue: 0.76), lineWidth: 1)
+                .stroke(AppTheme.separatorColor(colorScheme), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+        .shadow(
+            color: AppTheme.shadowColor(colorScheme),
+            radius: 4,
+            x: 0,
+            y: 2
+        )
     }
 }
 
 // MARK: - 健康报告区域
 struct HealthReportSection: View {
     let healthReport: HealthReport
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
@@ -181,7 +194,7 @@ struct HealthReportSection: View {
             HStack {
                 Text(healthReport.title)
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
             }
@@ -189,22 +202,18 @@ struct HealthReportSection: View {
             // 内容区域
             HStack(spacing: 16) {
                 // 左侧图片
-                AsyncImage(url: Bundle.main.url(forResource: healthReport.image, withExtension: "png")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                } placeholder: {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.2))
-                }
-                .frame(width: 109, height: 101)
+                Image("Image10")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .cornerRadius(12)
+                    .frame(width: 109, height: 101)
                 
                 // 右侧文字内容
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(healthReport.description, id: \.self) { line in
                         Text(line)
                             .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(Color(red: 0.52, green: 0.52, blue: 0.52))
+                            .foregroundColor(AppTheme.secondaryText(colorScheme))
                             .multilineTextAlignment(.leading)
                     }
                     
@@ -215,20 +224,23 @@ struct HealthReportSection: View {
             
             // 按钮区域
             HStack(spacing: 12) {
+                Spacer()
                 // Share按钮
                 Button(action: {}) {
                     Text("Share")
                         .font(.system(size: 13, weight: .regular))
-                        .foregroundColor(Color(red: 0.53, green: 0.13, blue: 0.75))
+                        .foregroundColor(AppTheme.accent)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color(red: 0.93, green: 0.91, blue: 0.97))
+                        .background(AppTheme.accent.opacity(0.15))
                         .cornerRadius(9)
                         .overlay(
                             RoundedRectangle(cornerRadius: 9)
-                                .stroke(Color(red: 0.53, green: 0.13, blue: 0.75), lineWidth: 1)
+                                .stroke(AppTheme.accent, lineWidth: 1)
                         )
                 }
+                
+                Spacer()
                 
                 // Upload按钮
                 Button(action: {}) {
@@ -237,11 +249,11 @@ struct HealthReportSection: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color(red: 0.60, green: 0.10, blue: 0.95))
+                        .background(AppTheme.accent)
                         .cornerRadius(9)
                         .overlay(
                             RoundedRectangle(cornerRadius: 9)
-                                .stroke(Color(red: 0.53, green: 0.13, blue: 0.75), lineWidth: 1)
+                                .stroke(AppTheme.accent, lineWidth: 1)
                         )
                 }
                 
@@ -249,19 +261,25 @@ struct HealthReportSection: View {
             }
         }
         .padding(16)
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(red: 0.88, green: 0.88, blue: 0.88), lineWidth: 1)
+                .stroke(AppTheme.separatorColor(colorScheme), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.25), radius: 2, x: -2, y: 2)
+        .shadow(
+            color: AppTheme.shadowColor(colorScheme),
+            radius: 2,
+            x: -2,
+            y: 2
+        )
     }
 }
 
 // MARK: - 健康奖牌区域
 struct HealthMedalsSection: View {
     let healthMedals: HealthMedals
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
@@ -269,7 +287,7 @@ struct HealthMedalsSection: View {
             HStack {
                 Text(healthMedals.title)
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
             }
@@ -278,11 +296,11 @@ struct HealthMedalsSection: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(healthMedals.description.components(separatedBy: "\n").first ?? "")
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(Color(red: 0.3, green: 0.2, blue: 0.41))
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
                 
                 Text(healthMedals.description.components(separatedBy: "\n").dropFirst().joined(separator: "\n"))
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(Color(red: 0.3, green: 0.2, blue: 0.41))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                     .lineSpacing(2)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -295,11 +313,11 @@ struct HealthMedalsSection: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color(red: 0.60, green: 0.10, blue: 0.95))
+                        .background(AppTheme.accent)
                         .cornerRadius(9)
                         .overlay(
                             RoundedRectangle(cornerRadius: 9)
-                                .stroke(Color(red: 0.53, green: 0.13, blue: 0.75), lineWidth: 1)
+                                .stroke(AppTheme.accent, lineWidth: 1)
                         )
                 }
                 
@@ -307,19 +325,25 @@ struct HealthMedalsSection: View {
             }
         }
         .padding(16)
-        .background(Color(red: 0.99, green: 0.96, blue: 1.0))
+        .background(AppTheme.elevatedCardBackground(colorScheme))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(red: 0.88, green: 0.88, blue: 0.88), lineWidth: 1)
+                .stroke(AppTheme.separatorColor(colorScheme), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.25), radius: 2, x: -2, y: 2)
+        .shadow(
+            color: AppTheme.shadowColor(colorScheme),
+            radius: 2,
+            x: -2,
+            y: 2
+        )
     }
 }
 
 // MARK: - 成就区域
 struct AchievementSection: View {
     let achievements: [Achievement]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
@@ -328,11 +352,11 @@ struct AchievementSection: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Achievement")
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                     
                     Text("Unlocked!")
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.black)
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                 }
                 
                 Spacer()
@@ -341,14 +365,14 @@ struct AchievementSection: View {
                 Button(action: {}) {
                     Text("View all")
                         .font(.system(size: 13, weight: .regular))
-                        .foregroundColor(Color(red: 0.53, green: 0.13, blue: 0.75))
+                        .foregroundColor(AppTheme.accent)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 8)
-                        .background(Color(red: 0.93, green: 0.91, blue: 0.97))
+                        .background(AppTheme.accent.opacity(0.15))
                         .cornerRadius(9)
                         .overlay(
                             RoundedRectangle(cornerRadius: 9)
-                                .stroke(Color(red: 0.53, green: 0.13, blue: 0.75), lineWidth: 1)
+                                .stroke(AppTheme.accent, lineWidth: 1)
                         )
                 }
             }
@@ -369,6 +393,7 @@ struct AchievementSection: View {
 // MARK: - 单个成就卡片
 struct AchievementCard: View {
     let achievement: Achievement
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 12) {
@@ -379,12 +404,12 @@ struct AchievementCard: View {
                     .frame(width: 83, height: 83)
                     .overlay(
                         Circle()
-                            .stroke(Color(red: 0.9, green: 0.91, blue: 0.92), lineWidth: 1)
+                            .stroke(AppTheme.separatorColor(colorScheme), lineWidth: 1)
                     )
                 
                 // 内部图标
                 Circle()
-                    .fill(Color.white)
+                    .fill(AppTheme.cardBackground(colorScheme))
                     .frame(width: 47, height: 47)
                     .overlay(
                         Image(systemName: "trophy.fill")
@@ -396,28 +421,34 @@ struct AchievementCard: View {
             // 奖牌名称
             Text(achievement.medalName)
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(.black)
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
             // 成就描述
             Text(achievement.value)
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(.black)
+                .foregroundColor(AppTheme.secondaryText(colorScheme))
                 .multilineTextAlignment(.center)
         }
         .frame(width: 126, height: 148)
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(red: 0.88, green: 0.88, blue: 0.88), lineWidth: 1)
+                .stroke(AppTheme.separatorColor(colorScheme), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.25), radius: 2, x: -2, y: 2)
+        .shadow(
+            color: AppTheme.shadowColor(colorScheme),
+            radius: 2,
+            x: -2,
+            y: 2
+        )
     }
 }
 
 // MARK: - 记录值区域
 struct RecordsSection: View {
     let records: [RecordItem]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -426,14 +457,14 @@ struct RecordsSection: View {
                     HStack {
                         Text(record.title)
                             .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(Color(red: 0.24, green: 0.24, blue: 0.24))
+                            .foregroundColor(AppTheme.primaryText(colorScheme))
                             .multilineTextAlignment(.leading)
                         
                         Spacer()
                         
                         Text(record.value)
                             .font(.system(size: 20, weight: .regular))
-                            .foregroundColor(Color(red: 0.24, green: 0.24, blue: 0.24))
+                            .foregroundColor(AppTheme.primaryText(colorScheme))
                     }
                     .padding(.horizontal, 16)
                     .padding(.vertical, 16)
@@ -441,20 +472,25 @@ struct RecordsSection: View {
                     // 分割线
                     if record.hasBottomLine {
                         Rectangle()
-                            .fill(Color(red: 0.24, green: 0.24, blue: 0.24))
+                            .fill(AppTheme.separatorColor(colorScheme))
                             .frame(height: 1)
                             .padding(.horizontal, 16)
                     }
                 }
             }
         }
-        .background(Color(red: 0.99, green: 0.96, blue: 1.0))
+        .background(AppTheme.elevatedCardBackground(colorScheme))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(red: 0.88, green: 0.88, blue: 0.88), lineWidth: 1)
+                .stroke(AppTheme.separatorColor(colorScheme), lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.25), radius: 2, x: -2, y: 2)
+        .shadow(
+            color: AppTheme.shadowColor(colorScheme),
+            radius: 2,
+            x: -2,
+            y: 2
+        )
     }
 }
 
@@ -462,6 +498,7 @@ struct RecordsSection: View {
 struct ReminderSection: View {
     let reminder: Reminder
     @Binding var isEnabled: Bool
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
@@ -469,25 +506,25 @@ struct ReminderSection: View {
             HStack {
                 Text(reminder.title)
                     .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
                 
                 // 图标
                 Image(systemName: "bell.fill")
                     .font(.system(size: 20))
-                    .foregroundColor(Color(red: 0.24, green: 0.24, blue: 0.24))
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
             }
             
             // 内容和时间
             VStack(alignment: .leading, spacing: 8) {
                 Text(reminder.content)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color(red: 0.52, green: 0.52, blue: 0.52))
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
                 
                 Text(reminder.time)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color(red: 0.52, green: 0.52, blue: 0.52))
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -498,15 +535,15 @@ struct ReminderSection: View {
                 Toggle("", isOn: $isEnabled)
                     .labelsHidden()
                     .scaleEffect(0.8)
-                    .accentColor(Color(red: 0.60, green: 0.31, blue: 0.58))
+                    .accentColor(AppTheme.accent)
             }
         }
         .padding(16)
-        .background(Color(red: 0.24, green: 0.24, blue: 0.24).opacity(0.02))
+        .background(AppTheme.cardBackground(colorScheme))
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(red: 0.88, green: 0.88, blue: 0.88), lineWidth: 1)
+                .stroke(AppTheme.separator, lineWidth: 1)
         )
         .shadow(color: .black.opacity(0.25), radius: 2, x: -2, y: 2)
     }

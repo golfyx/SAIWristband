@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct SharingView: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var showingMoments = false
+    @State private var showingHealthApps = false
+    @State private var showingShopping = false
+    
     var body: some View {
         VStack(spacing: 0) {
             // 自定义导航栏
@@ -20,12 +25,14 @@ struct SharingView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Social")
                             .font(.system(size: 20, weight: .regular))
-                            .foregroundColor(Color(red: 0.36, green: 0.0, blue: 0.62))
+                            .foregroundColor(AppTheme.accent)
                         
-                        NavigationLink(destination: MomentsView()) {
+                        Button(action: {
+                            showingMoments = true
+                        }) {
                             SocialPrivacyCard(
                                 title: "Ranking list & Badges",
-                                backgroundColor: Color(red: 0.99, green: 0.96, blue: 1.0)
+                                backgroundColor: AppTheme.cardBackground(colorScheme)
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -36,12 +43,14 @@ struct SharingView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Privacy")
                             .font(.system(size: 20, weight: .regular))
-                            .foregroundColor(Color(red: 0.36, green: 0.0, blue: 0.62))
+                            .foregroundColor(AppTheme.accent)
                         
-                        NavigationLink(destination: HealthAppsView()) {
+                        Button(action: {
+                            showingHealthApps = true
+                        }) {
                             SocialPrivacyCard(
                                 title: "Apps",
-                                backgroundColor: Color(red: 0.99, green: 0.96, blue: 1.0)
+                                backgroundColor: AppTheme.cardBackground(colorScheme)
                             )
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -53,14 +62,16 @@ struct SharingView: View {
                         HStack {
                             Text("Shopping")
                                 .font(.system(size: 20, weight: .regular))
-                                .foregroundColor(Color(red: 0.36, green: 0.0, blue: 0.62))
+                                .foregroundColor(AppTheme.accent)
                             
                             Spacer()
                             
-                            NavigationLink(destination: ShoppingView()) {
+                            Button(action: {
+                                showingShopping = true
+                            }) {
                                 Text("More Items →")
                                     .font(.system(size: 14, weight: .regular))
-                                    .foregroundColor(Color(red: 0.36, green: 0.0, blue: 0.62))
+                                    .foregroundColor(AppTheme.accent)
                             }
                             .buttonStyle(PlainButtonStyle())
                         }
@@ -72,13 +83,23 @@ struct SharingView: View {
                 .padding(.top, 16)
             }
         }
-        .background(Color.white)
+        .background(AppTheme.background(colorScheme))
+        .sheet(isPresented: $showingMoments) {
+            MomentsView()
+        }
+        .sheet(isPresented: $showingHealthApps) {
+            HealthAppsView()
+        }
+        .sheet(isPresented: $showingShopping) {
+            ShoppingView()
+        }
     }
 }
 
 // MARK: - 自定义导航栏
 struct SharingNavigationBar: View {
     let title: String
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -88,14 +109,14 @@ struct SharingNavigationBar: View {
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                 }
                 
                 Spacer()
                 
                 Text(title)
                     .font(.system(size: 18, weight: .regular))
-                    .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
                 
@@ -113,7 +134,8 @@ struct SharingNavigationBar: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(height: 0.5)
         }
-        .background(Color.white)
+        .background(colorScheme == .dark ? Color(red: 0.15, green: 0.15, blue: 0.15) : Color.white)
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
     }
 }
@@ -122,19 +144,20 @@ struct SharingNavigationBar: View {
 struct SocialPrivacyCard: View {
     let title: String
     let backgroundColor: Color
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack {
             Text(title)
                 .font(.system(size: 16, weight: .regular))
-                .foregroundColor(Color(red: 0.61, green: 0.31, blue: 0.59))
+                .foregroundColor(colorScheme == .dark ? Color.white : AppTheme.primary1)
                 .lineLimit(2)
             
             Spacer()
             
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .medium))
-                .foregroundColor(Color(red: 0.61, green: 0.31, blue: 0.59))
+                .foregroundColor(AppTheme.accent)
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 16)
@@ -146,26 +169,25 @@ struct SocialPrivacyCard: View {
 
 // MARK: - Shopping 卡片
 struct ShoppingCard: View {
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         HStack(spacing: 16) {
             // 第一个商品
             ProductItem(
-                imageName: "health_watch_logo",
+                imageName: "Image16",
                 productName: "Watch 1",
-                price: "$120",
-                backgroundColor: Color(red: 1.0, green: 0.99, blue: 0.96, opacity: 0.54)
+                price: "$120"
             )
             
             // 第二个商品
             ProductItem(
-                imageName: "abbott_device",
+                imageName: "Image17",
                 productName: "Watch 2",
-                price: "$80",
-                backgroundColor: Color.white
+                price: "$80"
             )
         }
         .padding(16)
-        .background(Color.white)
+        .background(colorScheme == .dark ? Color(red: 0.15, green: 0.15, blue: 0.15) : Color.white)
         .cornerRadius(8)
         .overlay(
             RoundedRectangle(cornerRadius: 8)
@@ -180,32 +202,27 @@ struct ProductItem: View {
     let imageName: String
     let productName: String
     let price: String
-    let backgroundColor: Color
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 12) {
             // 商品图片
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(backgroundColor)
-                    .frame(width: 80, height: 80)
-                
                 Image(imageName)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 60, height: 60)
-            }
+                    .frame(width: 80, height: 80)
+                    .cornerRadius(16)
             
             // 商品名称
             Text(productName)
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(Color(red: 0.38, green: 0.18, blue: 0.5))
+                .foregroundColor(colorScheme == .dark ? Color.white : AppTheme.primary1)
                 .lineLimit(1)
             
             // 价格
             Text(price)
                 .font(.system(size: 12, weight: .bold))
-                .foregroundColor(Color(red: 0.62, green: 0.27, blue: 0.6))
+                .foregroundColor(AppTheme.accent)
         }
         .frame(maxWidth: .infinity)
     }

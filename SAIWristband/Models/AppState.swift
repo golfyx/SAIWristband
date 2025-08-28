@@ -50,25 +50,47 @@ class AppState: ObservableObject {
     }
     
     private func checkLoginStatus() {
-        // 这里可以检查UserDefaults或Keychain中的登录状态
-        // 默认不登录，进入欢迎页
-        self.isLoggedIn = false
-        self.currentUser = nil
+        // 检查UserDefaults中保存的登录状态
+        let savedLoginStatus = UserDefaults.standard.bool(forKey: "isLoggedIn")
+        let savedUserData = UserDefaults.standard.data(forKey: "currentUser")
+        
+        if savedLoginStatus && savedUserData != nil {
+            // 尝试解码保存的用户数据
+            if let user = try? JSONDecoder().decode(User.self, from: savedUserData!) {
+                self.currentUser = user
+                self.isLoggedIn = true
+            } else {
+                // 如果用户数据解码失败，清除登录状态
+                self.isLoggedIn = false
+                self.currentUser = nil
+                UserDefaults.standard.removeObject(forKey: "isLoggedIn")
+                UserDefaults.standard.removeObject(forKey: "currentUser")
+            }
+        } else {
+            self.isLoggedIn = false
+            self.currentUser = nil
+        }
         self.hasCompletedOnboarding = false
     }
     
     func login(user: User) {
         self.currentUser = user
         self.isLoggedIn = true
-        // 保存登录状态到UserDefaults
+        
+        // 保存登录状态和用户数据到UserDefaults
         UserDefaults.standard.set(true, forKey: "isLoggedIn")
+        if let userData = try? JSONEncoder().encode(user) {
+            UserDefaults.standard.set(userData, forKey: "currentUser")
+        }
     }
     
     func logout() {
         self.currentUser = nil
         self.isLoggedIn = false
-        // 清除登录状态
+        
+        // 清除登录状态和用户数据
         UserDefaults.standard.removeObject(forKey: "isLoggedIn")
+        UserDefaults.standard.removeObject(forKey: "currentUser")
     }
 }
 

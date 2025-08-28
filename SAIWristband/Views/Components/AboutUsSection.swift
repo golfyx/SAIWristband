@@ -9,13 +9,14 @@ import SwiftUI
 
 // MARK: - 关于我们区域
 struct AboutUsSection: View {
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         VStack(spacing: 16) {
             // 标题
             HStack {
                 Text("About Us")
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 Spacer()
             }
             
@@ -37,11 +38,11 @@ struct AboutUsSection: View {
                         Text("odio maximus, congue.")
                     }
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color(red: 0.52, green: 0.52, blue: 0.52))
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
                 }
             }
             .padding(16)
-            .background(Color.white)
+            .background(AppTheme.cardBackground(colorScheme))
             .cornerRadius(12)
             .shadow(color: .black.opacity(0.08), radius: 0, x: 0, y: 0)
         }

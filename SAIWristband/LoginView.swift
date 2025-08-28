@@ -24,6 +24,7 @@ struct LoginView: View {
     @State private var showingSignUp = false
     @Binding var isLoggedIn: Bool
     @FocusState private var focusedField: Field?
+    @Environment(\.colorScheme) private var colorScheme
     
     enum Field {
         case email, password
@@ -40,8 +41,8 @@ struct LoginView: View {
             let scale = min(scaleX, scaleY) // 使用较小的比例确保内容不会被裁剪
             
             ZStack {
-                // 整体白色背景
-                Color.white
+                // 整体背景（暗黑/浅色）
+                AppTheme.background(colorScheme)
                     .ignoresSafeArea()
                 
                 // 带阴影的白色容器
@@ -54,12 +55,12 @@ struct LoginView: View {
                             Text("Welcome to")
                                 .font(.custom("OpenSans-Bold", size: scaled(32, scale)))
                                 .fontWeight(.bold)
-                                .foregroundColor(Color(hex: "38143E"))
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
                             
-                            Text("HealthWatch")
+                            Text("AINNIA")
                                 .font(.custom("OpenSans-Bold", size: scaled(32, scale)))
-                            .fontWeight(.bold)
-                                .foregroundColor(Color(hex: "38143E"))
+                                .fontWeight(.bold)
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
                         }
                         .padding(.top, scaled(60, scale))
                         .padding(.bottom, scaled(46, scale))
@@ -155,7 +156,7 @@ struct LoginView: View {
                     }
                     .background(
                         RoundedRectangle(cornerRadius: 12 * scale)
-                            .fill(Color.white)
+                            .fill(AppTheme.cardBackground(colorScheme))
                             .shadow(
                                 color: Color.black.opacity(0.1),
                                 radius: 5 * scale,
@@ -276,18 +277,19 @@ struct HealthWatchTextField: View {
     let placeholder: String
     @Binding var text: String
     let scale: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         TextField(placeholder, text: $text)
             .font(.custom("OpenSans-Regular", size: 14 * scale))
-            .foregroundColor(.primary)
+            .foregroundColor(AppTheme.primaryText(colorScheme))
             .padding(.horizontal, 8 * scale)
             .padding(.vertical, 10 * scale)
             .background(
                 RoundedRectangle(cornerRadius: 8 * scale)
-                    .fill(Color(hex: "E6E6E6"))
+                    .fill(AppTheme.cardBackground(colorScheme))
                     .shadow(
-                        color: Color.black.opacity(0.16),
+                        color: Color.black.opacity(AppTheme.shadowOpacity(colorScheme)),
                         radius: 4 * scale,
                         x: 0,
                         y: 2 * scale
@@ -309,18 +311,19 @@ struct HealthWatchSecureField: View {
     let placeholder: String
     @Binding var text: String
     let scale: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         SecureField(placeholder, text: $text)
             .font(.custom("OpenSans-Regular", size: 14 * scale))
-            .foregroundColor(.primary)
+            .foregroundColor(AppTheme.primaryText(colorScheme))
             .padding(.horizontal, 8 * scale)
             .padding(.vertical, 10 * scale)
             .background(
                 RoundedRectangle(cornerRadius: 8 * scale)
-                    .fill(Color(hex: "E6E6E6"))
+                    .fill(AppTheme.cardBackground(colorScheme))
                     .shadow(
-                        color: Color.black.opacity(0.16),
+                        color: Color.black.opacity(AppTheme.shadowOpacity(colorScheme)),
                         radius: 4 * scale,
                         x: 0,
                         y: 2 * scale

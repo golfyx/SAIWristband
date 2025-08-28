@@ -14,6 +14,7 @@ struct DeviceManagementView: View {
     @State private var healthReport = DeviceHealthReport.sampleData
     @State private var isNotificationEnabled = true
     
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         NavigationView {
             ScrollView {
@@ -25,7 +26,7 @@ struct DeviceManagementView: View {
                     
                     // 分割线
                     Divider()
-                        .background(Color.gray.opacity(0.3))
+                        .background(AppTheme.separator)
                     
                     VStack(spacing: 0) {
                         // Manage Devices 标题
@@ -33,7 +34,7 @@ struct DeviceManagementView: View {
                             Text("Manage Devices")
                                 .font(.custom("Montserrat", size: 20))
                                 .fontWeight(.regular)
-                                .foregroundColor(Color(red: 0.11, green: 0.11, blue: 0.11))
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
                             Spacer()
                         }
                         .padding(.horizontal, 24)
@@ -54,7 +55,7 @@ struct DeviceManagementView: View {
                     }
                 }
             }
-            .background(Color.white)
+            .background(AppTheme.background(colorScheme))
             .navigationBarHidden(true)
         }
         .navigationBarHidden(true)
@@ -64,18 +65,19 @@ struct DeviceManagementView: View {
 // MARK: - 自定义设备页面导航栏
 struct CustomDeviceNavigationBar: View {
     let onBackTapped: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack {
             // 返回按钮
             Button(action: onBackTapped) {
                 RoundedRectangle(cornerRadius: 9.5)
-                    .fill(Color.white)
+                    .fill(AppTheme.cardBackground(colorScheme))
                     .frame(width: 19, height: 19)
                     .overlay(
                         Image(systemName: "chevron.left")
                             .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                            .foregroundColor(AppTheme.primaryText(colorScheme))
                     )
             }
             
@@ -85,7 +87,7 @@ struct CustomDeviceNavigationBar: View {
             Text("Devices")
                 .font(.custom("Montserrat", size: 18))
                 .fontWeight(.regular)
-                .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
             Spacer()
             
@@ -96,7 +98,8 @@ struct CustomDeviceNavigationBar: View {
         }
         .padding(.horizontal, 24)
         .padding(.vertical, 12)
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
     }
 }
 
@@ -105,12 +108,13 @@ struct DeviceDetailCard: View {
     let device: Device
     @Binding var isNotificationEnabled: Bool
     @State private var showUnbindAlert = false
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
             // 设备主要信息区域
             RoundedRectangle(cornerRadius: 22)
-                .fill(Color.white)
+                .fill(AppTheme.cardBackground(colorScheme))
                 .frame(height: 274)
                 .overlay(
                     VStack(spacing: 0) {
@@ -121,26 +125,26 @@ struct DeviceDetailCard: View {
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 50, height: 50)
-                                .background(Color.clear)
+                                .clipShape(Circle())
                             
                             VStack(alignment: .leading, spacing: 8) {
                                 // 设备名称
                                 Text(device.name)
                                     .font(.custom("Montserrat", size: 16))
                                     .fontWeight(.regular)
-                                    .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                                    .foregroundColor(AppTheme.primaryText(colorScheme))
                                 
                                 // 连接状态
                                 Text(device.connectionStatus.rawValue)
                                     .font(.custom("Montserrat", size: 12))
                                     .fontWeight(.regular)
-                                    .foregroundColor(Color(red: 0.56, green: 0.56, blue: 0.57))
+                                    .foregroundColor(AppTheme.secondaryText(colorScheme))
                             }
                             
                             Spacer()
                         }
                         .padding(.horizontal, 16)
-                        .padding(.top, 16)
+                        .padding(.vertical, 16)
                         
                         // 设备详细信息
                         VStack(spacing: 18) {
@@ -150,7 +154,7 @@ struct DeviceDetailCard: View {
                                     Text("Battery: \(batteryLevel)%")
                                         .font(.custom("Montserrat", size: 14))
                                         .fontWeight(.regular)
-                                        .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                                        .foregroundColor(AppTheme.primaryText(colorScheme))
                                     
                                     Spacer()
                                 }
@@ -163,7 +167,7 @@ struct DeviceDetailCard: View {
                                     Text("Usage Time: \(usageTime)")
                                         .font(.custom("Montserrat", size: 14))
                                         .fontWeight(.regular)
-                                        .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                                        .foregroundColor(AppTheme.primaryText(colorScheme))
                                     
                                     Spacer()
                                 }
@@ -176,7 +180,7 @@ struct DeviceDetailCard: View {
                                     Text("Model: \(model)")
                                         .font(.custom("Montserrat", size: 14))
                                         .fontWeight(.regular)
-                                        .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                                        .foregroundColor(AppTheme.primaryText(colorScheme))
                                     
                                     Spacer()
                                 }
@@ -188,7 +192,7 @@ struct DeviceDetailCard: View {
                                 Text("Notifications")
                                     .font(.custom("Montserrat", size: 14))
                                     .fontWeight(.regular)
-                                    .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                                    .foregroundColor(AppTheme.primaryText(colorScheme))
                                 
                                 Spacer()
                                 
@@ -215,7 +219,7 @@ struct DeviceDetailCard: View {
                                 Spacer()
                             }
                             .frame(height: 36)
-                            .background(Color(red: 0.60, green: 0.10, blue: 0.95))
+                            .background(AppTheme.accent)
                             .cornerRadius(18)
                         }
                         .padding(.horizontal, 16)
@@ -231,7 +235,7 @@ struct DeviceDetailCard: View {
                         }
                     }
                 )
-                .shadow(color: .black.opacity(0.1), radius: 5, x: 2, y: 0)
+                .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 10, x: 2, y: 0)
         }
     }
 }
@@ -242,16 +246,16 @@ struct CustomToggleStyle: ToggleStyle {
         ZStack {
             // 背景
             RoundedRectangle(cornerRadius: 11.5)
-                .fill(configuration.isOn ? Color(red: 0.61, green: 0.31, blue: 0.59) : Color.gray.opacity(0.3))
+                .fill(configuration.isOn ? AppTheme.accent : AppTheme.separator.opacity(0.5))
                 .frame(width: 47, height: 23)
                 .overlay(
                     RoundedRectangle(cornerRadius: 11.5)
-                        .stroke(Color(red: 0.61, green: 0.31, blue: 0.59), lineWidth: 1)
+                        .stroke(AppTheme.accent, lineWidth: 1)
                 )
             
             // 滑块
             Circle()
-                .fill(Color(red: 0.61, green: 0.31, blue: 0.59))
+                .fill(AppTheme.accent)
                 .frame(width: 17, height: 16)
                 .offset(x: configuration.isOn ? 13.25 : -13.25)
                 .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
@@ -265,6 +269,7 @@ struct CustomToggleStyle: ToggleStyle {
 // MARK: - 设备列表区域
 struct DeviceListSection: View {
     let devices: [Device]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -273,9 +278,9 @@ struct DeviceListSection: View {
                     .padding(.horizontal, 16)
             }
         }
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
         .cornerRadius(22)
-        .shadow(color: .black.opacity(0.1), radius: 10, x: 2, y: 0)
+        .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 10, x: 2, y: 0)
         .padding(.vertical, 16)
         .padding(22)
     }
@@ -285,6 +290,7 @@ struct DeviceListSection: View {
 struct DeviceListRow: View {
     let device: Device
     let isLast: Bool
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -301,12 +307,12 @@ struct DeviceListRow: View {
                     Text(device.brand)
                         .font(.custom("Montserrat", size: 18))
                         .fontWeight(.regular)
-                        .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                     
                     Text(device.description)
                         .font(.custom("Montserrat", size: 14))
                         .fontWeight(.regular)
-                        .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                        .foregroundColor(AppTheme.secondaryText(colorScheme))
                 }
                 
                 Spacer()
@@ -314,7 +320,7 @@ struct DeviceListRow: View {
                 // 右箭头
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(Color(red: 0.76, green: 0.66, blue: 0.83))
+                    .foregroundColor(AppTheme.accent.opacity(0.8))
             }
             .padding(.horizontal, 5)
             .frame(height: 80)
@@ -322,7 +328,7 @@ struct DeviceListRow: View {
             // 分割线（除了最后一行）
             if !isLast {
                 Rectangle()
-                    .fill(Color(red: 0.76, green: 0.66, blue: 0.83))
+                    .fill(AppTheme.separator)
                     .frame(height: 1)
             }
         }

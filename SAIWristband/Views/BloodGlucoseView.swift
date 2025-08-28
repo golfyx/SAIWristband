@@ -10,6 +10,7 @@ import Charts
 
 struct BloodGlucoseView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     
     // 模拟血糖数据 - 按照设计稿精确数值
     @State private var glucoseData: [GlucoseDataPoint] = [
@@ -57,7 +58,7 @@ struct BloodGlucoseView: View {
                     .frame(maxWidth: .infinity)
                 }
             }
-            .background(Color.white)
+//            .background(AppTheme.background(colorScheme))
             .navigationBarHidden(true)
             .sheet(isPresented: $showingScanSheet) {
                 ScanSheetView()
@@ -71,6 +72,7 @@ struct BloodGlucoseView: View {
 // MARK: - 自定义导航栏
 struct CustomBloodGlucoseNavigationBar: View {
     let onBack: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack {
@@ -78,9 +80,9 @@ struct CustomBloodGlucoseNavigationBar: View {
             Button(action: onBack) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(Color(red: 0.03, green: 0.03, blue: 0.03))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                     .frame(width: 44, height: 44)
-                    .background(Color.white)
+                    .background(AppTheme.cardBackground(colorScheme))
                     .clipShape(Circle())
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
@@ -91,7 +93,7 @@ struct CustomBloodGlucoseNavigationBar: View {
             Text("Blood Glucose testing")
                 .font(.custom("Montserrat", size: 18))
                 .fontWeight(.regular)
-                .foregroundColor(Color(red: 0.03, green: 0.03, blue: 0.03))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
             Spacer()
             
@@ -102,13 +104,15 @@ struct CustomBloodGlucoseNavigationBar: View {
         .padding(.horizontal, 20)
         .padding(.top, 12)
         .padding(.bottom, 16)
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
     }
 }
 
 // MARK: - 最近24小时记录部分
 struct Last24HoursSection: View {
     let glucoseData: [GlucoseDataPoint]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 24) {
@@ -116,7 +120,7 @@ struct Last24HoursSection: View {
             Text("The last 24 hours")
                 .font(.custom("Noto Sans JP", size: 15))
                 .fontWeight(.regular)
-                .foregroundColor(Color(red: 0.30, green: 0.04, blue: 0.44))
+                .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "9A1AF2"))
                 .frame(maxWidth: .infinity)
             
             // 结果部分
@@ -126,12 +130,12 @@ struct Last24HoursSection: View {
                     Text("Time within the range")
                         .font(.custom("Noto Sans JP", size: 12))
                         .fontWeight(.regular)
-                        .foregroundColor(Color(red: 0.47, green: 0.36, blue: 0.59))
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "FFFFFF") : Color(hex: "785B97"))
                     
                     Text("100%")
                         .font(.custom("Noto Sans JP", size: 18))
                         .fontWeight(.bold)
-                        .foregroundColor(Color(red: 0.30, green: 0.04, blue: 0.44))
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "4D0B6F"))
                 }
                 
                 Spacer()
@@ -141,12 +145,12 @@ struct Last24HoursSection: View {
                     Text("The last reading")
                         .font(.custom("Noto Sans JP", size: 12))
                         .fontWeight(.regular)
-                        .foregroundColor(Color(red: 0.47, green: 0.36, blue: 0.59))
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "FFFFFF") : Color(hex: "785B97"))
                     
                     Text("17:44")
                         .font(.custom("Noto Sans JP", size: 18))
                         .fontWeight(.bold)
-                        .foregroundColor(Color(red: 0.30, green: 0.04, blue: 0.44))
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "4D0B6F"))
                 }
                 
                 Spacer()
@@ -156,12 +160,12 @@ struct Last24HoursSection: View {
                     Text("Average")
                         .font(.custom("Noto Sans JP", size: 13))
                         .fontWeight(.regular)
-                        .foregroundColor(Color(red: 0.47, green: 0.36, blue: 0.59))
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "FFFFFF") : Color(hex: "785B97"))
                     
                     Text("6 mmol/L")
                         .font(.custom("Noto Sans JP", size: 21))
                         .fontWeight(.regular)
-                        .foregroundColor(Color(red: 0.30, green: 0.04, blue: 0.44))
+                        .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "4D0B6F"))
                 }
             }
             
@@ -174,6 +178,7 @@ struct Last24HoursSection: View {
 // MARK: - 血糖折线图
 struct GlucoseChartView: View {
     let glucoseData: [GlucoseDataPoint]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -182,7 +187,7 @@ struct GlucoseChartView: View {
                 Text("mmol/L")
                     .font(.custom("Noto Sans JP", size: 10))
                     .fontWeight(.regular)
-                    .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37))
+                    .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "572D5F"))
                 
                 Spacer()
             }
@@ -196,7 +201,7 @@ struct GlucoseChartView: View {
                         Text("\(value)")
                             .font(.custom("Noto Sans JP", size: 12))
                             .fontWeight(.regular)
-                            .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37))
+                            .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "572D5F"))
                         
                         if value != 0 {
                             Spacer()
@@ -213,13 +218,13 @@ struct GlucoseChartView: View {
                     ZStack {
                         // 背景紫色区域
                         Rectangle()
-                            .fill(Color(red: 0.85, green: 0.75, blue: 0.95).opacity(0.3))
+                            .fill(colorScheme == .dark ? Color(hex: "F7E6FF").opacity(0.57) : Color(hex: "E5CDEF").opacity(0.57))
                         
                         // 横向网格线 - 对应Y轴刻度
                         VStack(spacing: 0) {
                             ForEach([21, 18, 15, 12, 9, 6, 3], id: \.self) { _ in
                                 Divider()
-                                    .background(Color(red: 0.70, green: 0.58, blue: 0.79).opacity(0.4))
+                                    .background(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "B393CA"))
                                 
                                 Spacer()
                             }
@@ -316,7 +321,7 @@ struct GlucoseChartView: View {
                                 Text(String(format: "%02d:00", hour))
                                     .font(.custom("Noto Sans JP", size: 11))
                                     .fontWeight(.regular)
-                                    .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37))
+                                    .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "572D5F"))
                                     .frame(maxWidth: .infinity)
                             }
                         }
@@ -389,53 +394,57 @@ struct ScanButtonSection: View {
     }
 }
 
+
+
 // MARK: - 完成度部分
 struct CompletionSection: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
-        ZStack {
-            Rectangle()
-                .background(.gray)
-            
-            VStack(spacing: 16) {
-                // 进度条
-                HStack(spacing: 8) {
-                    ForEach(0..<7) { index in
-                        if index < 4 {
-                            // 已完成的部分
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(Color(red: 0.18, green: 0.82, blue: 0.24))
-                                .frame(width: 46, height: 10)
-                        } else {
-                            // 未完成的部分
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(Color(red: 0.76, green: 0.76, blue: 0.76))
-                                .frame(width: 46, height: 10)
-                        }
+        VStack(spacing: 16) {
+            // 进度条
+            HStack(spacing: 8) {
+                ForEach(0..<7) { index in
+                    if index < 4 {
+                        // 已完成的部分
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color(red: 0.18, green: 0.82, blue: 0.24))
+                            .frame(width: 46, height: 10)
+                    } else {
+                        // 未完成的部分
+                        RoundedRectangle(cornerRadius: 5)
+                            .fill(Color(red: 0.76, green: 0.76, blue: 0.76))
+                            .frame(width: 46, height: 10)
                     }
                 }
-                .padding(.top, 3)
-                
-                // 文字提示
-                HStack(spacing: 8) {
-                    Text("There are still")
-                        .font(.custom("Noto Sans JP", size: 14))
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    
-                    Text("5")
-                        .font(.custom("Roboto Mono", size: 32))
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    
-                    Text("days until the sensor fails")
-                        .font(.custom("Noto Sans JP", size: 14))
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                }
-                .padding(.horizontal, 3)
-                .padding(.bottom, 20)
             }
+            .padding(.top, 3)
+            
+            // 文字提示
+            HStack(spacing: 8) {
+                Spacer()
+                Text("There are still")
+                    .font(.custom("Noto Sans JP", size: 14))
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                
+                Text("5")
+                    .font(.custom("Roboto Mono", size: 32))
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                
+                Text("days until the sensor fails")
+                    .font(.custom("Noto Sans JP", size: 14))
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                Spacer()
+            }
+            .padding(.horizontal, 3)
+            .padding(.bottom, 20)
         }
+        .padding(.vertical, 4)
+        .frame(width: .infinity)
+        .background(colorScheme == .dark ? Color(hex: "4D4D4D") : Color(hex: "4D4D4D"))
     }
 }
 

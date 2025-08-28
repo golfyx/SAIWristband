@@ -18,6 +18,8 @@ struct AdvisorView: View {
         )
     ]
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         VStack(spacing: 0) {
             // 自定义导航栏
@@ -27,27 +29,21 @@ struct AdvisorView: View {
             
             // 分割线
             Divider()
-                .background(Color.gray.opacity(0.3))
+                .background(AppTheme.separator)
             
             // 聊天界面内容
             ScrollView {
                 LazyVStack(spacing: 16) {
-                    // 顶部插画（来自设计稿）
-                    
                     MessageBubble(message: messages[0])
                     
                     HStack {
                         Spacer()
-                        AsyncImage(url: Bundle.main.url(forResource: "advisor_illustration-3c1daa", withExtension: "png")) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        } placeholder: {
-                            Rectangle()
-                                .fill(Color(red: 0.969, green: 0.961, blue: 1.0))
-                        }
-                        .frame(width: 100, height: 100)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        
+                        Image("Image15")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 100, height: 100)
+                            .cornerRadius(12)
                     }
                     .padding(.trailing, 16)
                     .padding(.vertical, 8)
@@ -61,7 +57,7 @@ struct AdvisorView: View {
             // 底部输入框
             bottomInputView
         }
-        .background(Color.white)
+        .background(AppTheme.background(colorScheme))
         .navigationBarHidden(true)
     }
     
@@ -69,15 +65,16 @@ struct AdvisorView: View {
     struct customNavigationBar: View {
         let onBack: () -> Void
         
+        @Environment(\.colorScheme) private var colorScheme
         var body: some View {
             HStack {
                 // 返回按钮
                 Button(action: onBack) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(Color(red: 0.03, green: 0.03, blue: 0.03))
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                         .frame(width: 44, height: 44)
-                        .background(Color.white)
+                        .background(AppTheme.cardBackground(colorScheme))
                         .clipShape(Circle())
                         .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
                 }
@@ -88,7 +85,7 @@ struct AdvisorView: View {
                 Text("Blood Glucose testing")
                     .font(.custom("Montserrat", size: 18))
                     .fontWeight(.regular)
-                    .foregroundColor(Color(red: 0.03, green: 0.03, blue: 0.03))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
                 
@@ -99,7 +96,8 @@ struct AdvisorView: View {
             .padding(.horizontal, 20)
             .padding(.top, 12)
             .padding(.bottom, 16)
-            .background(Color.white)
+            .background(AppTheme.cardBackground(colorScheme))
+            .glassBackground(RoundedRectangle(cornerRadius: 0))
         }
     }
     
@@ -111,12 +109,12 @@ struct AdvisorView: View {
                 HStack {
                     TextField("Type your question here...", text: $messageText)
                         .font(.system(size: 14, weight: .regular, design: .default))
-                        .foregroundColor(Color(red: 0.012, green: 0.012, blue: 0.012))
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                         .padding(.horizontal, 8)
                         .padding(.vertical, 9.5)
                 }
                 .frame(height: 36)
-                .background(Color(red: 0.918, green: 0.886, blue: 0.933))
+                .background(AppTheme.cardBackground(colorScheme).opacity(0.9))
                 .cornerRadius(8)
                 
                 Spacer()
@@ -125,14 +123,14 @@ struct AdvisorView: View {
                 Button(action: sendMessage) {
                     Image(systemName: "arrow.up.circle.fill")
                         .font(.system(size: 32))
-                        .foregroundColor(Color(red: 0.427, green: 0.235, blue: 0.463))
+                        .foregroundColor(AppTheme.accent)
                 }
                 .frame(width: 32, height: 32)
             }
             .padding(.horizontal, 31)
             .padding(.vertical, 15)
         }
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
         .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: -2)
     }
     
@@ -165,6 +163,7 @@ struct AdvisorView: View {
 // 消息气泡组件
 struct MessageBubble: View {
     let message: ChatMessage
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack {
@@ -184,7 +183,7 @@ struct MessageBubble: View {
             .foregroundColor(.white)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color(red: 0.427, green: 0.235, blue: 0.463))
+            .background(AppTheme.accent)
             .cornerRadius(20)
             .frame(maxWidth: UIScreen.main.bounds.width * 0.7, alignment: .trailing)
     }
@@ -193,14 +192,14 @@ struct MessageBubble: View {
         VStack(alignment: .leading, spacing: 0) {
             Text(message.content)
                 .font(.system(size: 14, weight: .regular, design: .default))
-                .foregroundColor(Color(red: 0.129, green: 0.137, blue: 0.251))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
                 .padding(.horizontal, 32)
                 .padding(.vertical, 16)
-                .background(Color(red: 0.969, green: 0.961, blue: 1.0))
+                .background(AppTheme.elevatedCardBackground(colorScheme))
                 .cornerRadius(16)
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color(red: 0.898, green: 0.906, blue: 0.925), lineWidth: 1)
+                        .stroke(AppTheme.separator, lineWidth: 1)
                 )
                 .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 2)
                 .frame(maxWidth: UIScreen.main.bounds.width * 0.8, alignment: .leading)

@@ -103,7 +103,7 @@ extension HealthSummary {
             unit: "bpm",
             status: .normal,
             time: "10:28",
-            icon: "heart.fill",
+            icon: "Icon heart pulse",
             chartImage: "chart_1"
         ),
         HealthSummary(
@@ -112,7 +112,7 @@ extension HealthSummary {
             unit: "",
             status: .normal,
             time: "10:28",
-            icon: "drop.fill",
+            icon: "Icon water drop",
             chartImage: "chart_2"
         ),
         HealthSummary(
@@ -121,7 +121,7 @@ extension HealthSummary {
             unit: "mmol/L",
             status: .normal,
             time: "10:28",
-            icon: "drop.triangle.fill",
+            icon: "Icon bloodtype",
             chartImage: nil
         ),
         HealthSummary(
@@ -130,7 +130,7 @@ extension HealthSummary {
             unit: "%",
             status: .normal,
             time: "10:28",
-            icon: "lungs.fill",
+            icon: "Icon lungs",
             chartImage: nil
         )
     ]
@@ -151,10 +151,10 @@ extension TimelineEvent {
         TimelineEvent(
             time: "7:30 AM",
             title: "Have a breakfast",
-            icon: "fork.knife",
+            icon: "fork.knife.circle.fill",
             iconColor: Color(red: 0.4, green: 0.26, blue: 0.65),
             isActive: true,
-            image: "timeline_image_2",
+            image: "Icon egg alt",
             content: "Healthy breakfast to fuel your body for the day ahead",
             cardType: .solid
         ),

@@ -10,6 +10,7 @@ import SwiftUI
 // MARK: - 时间线区域
 struct TimelineSection: View {
     let events: [TimelineEvent]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
@@ -17,7 +18,7 @@ struct TimelineSection: View {
             HStack {
                 Text("Timeline")
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
             }
@@ -36,7 +37,7 @@ struct TimelineSection: View {
                 TimelineBottomButton()
             }
             .padding(20)
-            .background(Color.white)
+            .background(AppTheme.cardBackground(colorScheme))
             .cornerRadius(12)
             .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
         }
@@ -47,6 +48,7 @@ struct TimelineSection: View {
 struct TimelineEventCard: View {
     let event: TimelineEvent
     let isLast: Bool
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack(alignment: .center, spacing: 16) {
@@ -59,7 +61,7 @@ struct TimelineEventCard: View {
                 // 连接线（除了最后一个）
                 if !isLast {
                     Rectangle()
-                        .fill(Color(red: 0.4, green: 0.26, blue: 0.65).opacity(0.3))
+                        .fill(AppTheme.accent.opacity(0.3))
                         .frame(width: 2, height: 22)
                 }
             }
@@ -86,13 +88,10 @@ struct TimelineEventCard: View {
         } else {
             // 兜底：如果找不到图片，使用默认的圆形背景
             Circle()
-                .fill(event.isActive ? Color(red: 0.4, green: 0.26, blue: 0.65) : Color.white)
+                .fill(event.isActive ? AppTheme.accent : AppTheme.cardBackground(colorScheme))
                 .overlay(
                     Circle()
-                        .stroke(
-                            Color(red: 0.84, green: 0.8, blue: 0.98),
-                            lineWidth: 3
-                        )
+                        .stroke(AppTheme.accent.opacity(0.25), lineWidth: 3)
                 )
         }
     }
@@ -102,11 +101,11 @@ struct TimelineEventCard: View {
         case "Morning run":
             return "timeline_run_icon"
         case "Have a breakfast":
-            return "timeline_breakfast_icon" 
+            return "Icon egg alt"
         case "Wake up":
             return "timeline_wakeup_icon"
         default:
-            return "timeline_clock_icon"
+            return "timeline_wakeup_icon"
         }
     }
     
@@ -151,17 +150,17 @@ struct TimelineEventCard: View {
     }
     
     private func getTextColor() -> Color {
-        event.isActive ? Color(red: 0.4, green: 0.26, blue: 0.65) : Color.gray.opacity(0.6)
+        event.isActive ? AppTheme.accent : AppTheme.secondaryText(colorScheme)
     }
     
     private func getIconColor() -> Color {
-        event.isActive ? Color(red: 0.4, green: 0.26, blue: 0.65) : Color.gray.opacity(0.6)
+        event.isActive ? AppTheme.accent : AppTheme.secondaryText(colorScheme)
     }
     
     private func getCardBackground() -> Color {
         switch event.cardType {
         case .solid:
-            return Color.white
+            return AppTheme.cardBackground(colorScheme)
         case .dashed, .simple:
             return Color.clear
         }
@@ -172,13 +171,13 @@ struct TimelineEventCard: View {
             if event.cardType == .solid {
                 // 实线边框 + 阴影
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color(red: 0.84, green: 0.8, blue: 0.98), lineWidth: 2)
+                    .stroke(AppTheme.accent.opacity(0.25), lineWidth: 2)
                     .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
             } else {
                 // 虚线边框（包括.dashed和.simple）
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(
-                        Color(red: 0.84, green: 0.8, blue: 0.98),
+                        AppTheme.accent.opacity(0.25),
                         style: StrokeStyle(
                             lineWidth: 2,
                             dash: [4, 2]
@@ -191,29 +190,37 @@ struct TimelineEventCard: View {
 
 // MARK: - 底部按钮
 struct TimelineBottomButton: View {
+    @State private var showingFullTimeline = false
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         HStack {
             Spacer()
             
-            NavigationLink(destination: FullTimelineView()) {
+            Button(action: {
+                showingFullTimeline = true
+            }) {
                 HStack(spacing: 8) {
                     Image(systemName: "calendar")
                         .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(Color(red: 0.4, green: 0.26, blue: 0.65))
+                        .foregroundColor(AppTheme.accent)
                      
                     // 右侧文字
                     Text("View full timeline")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color(red: 0.4, green: 0.26, blue: 0.65))
+                        .foregroundColor(AppTheme.accent)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
-                .background(Color(red: 0.84, green: 0.8, blue: 0.98))
+                .background(AppTheme.accent.opacity(0.18))
                 .cornerRadius(12)
                 .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
             }
             
             Spacer()
+        }
+        .sheet(isPresented: $showingFullTimeline) {
+            FullTimelineView()
         }
     }
 }

@@ -15,6 +15,8 @@ struct HomeView: View {
     @State private var showingDeviceManagement = false
     @State private var showingFloatingMenu = false
     @State private var showingAdvisor = false
+    @EnvironmentObject var appState: AppState
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         NavigationView {
@@ -22,14 +24,14 @@ struct HomeView: View {
                 VStack(spacing: 0) {
                     // 自定义导航栏
                     CustomNavigationBar(
-                        deviceInfo: deviceInfo, 
+                        deviceInfo: deviceInfo,
                         showingProfile: $showingProfile,
                         showingDeviceManagement: $showingDeviceManagement
                     )
                     
                     // 分割线
                     Divider()
-                        .background(Color.gray.opacity(0.3))
+                        .background(AppTheme.separator)
                     
                     VStack(spacing: 24) {
                         // 消息提示区域
@@ -54,10 +56,11 @@ struct HomeView: View {
                     .padding(.bottom, 60) // 为TabBar留出空间
                 }
             }
-            .background(Color.white)
+            .background(AppTheme.background(colorScheme))
             .navigationBarHidden(true)
             .sheet(isPresented: $showingProfile) {
                 ProfileView()
+                    .environmentObject(appState)
             }
             .sheet(isPresented: $showingDeviceManagement) {
                 DeviceManagementView()
@@ -82,6 +85,7 @@ struct CustomNavigationBar: View {
     let deviceInfo: DeviceInfo
     @Binding var showingProfile: Bool
     @Binding var showingDeviceManagement: Bool
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack {
@@ -89,20 +93,11 @@ struct CustomNavigationBar: View {
             Button(action: {
                 showingProfile = true
             }) {
-                AsyncImage(url: Bundle.main.url(forResource: "user_avatar", withExtension: "png")) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Circle()
-                        .fill(Color(red: 0.84, green: 0.8, blue: 0.98))
-                        .overlay(
-                            Image(systemName: "person.fill")
-                                .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
-                        )
-                }
-                .frame(width: 52, height: 51)
-                .clipShape(Circle())
+                Image("user_avatar")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipShape(Circle())
+                    .frame(width: 52, height: 51)
             }
             
             Spacer()
@@ -117,19 +112,19 @@ struct CustomNavigationBar: View {
                         // 电池图标
                         ZStack {
                             RoundedRectangle(cornerRadius: 2)
-                                .stroke(Color(red: 0.34, green: 0.16, blue: 0.37), lineWidth: 1)
+                                .stroke(colorScheme == .dark ? .white : AppTheme.accent, lineWidth: 1)
                                 .frame(width: 18, height: 9)
                             
                             // 电池正极
                             Rectangle()
-                                .fill(Color(red: 0.34, green: 0.16, blue: 0.37))
+                                .fill(colorScheme == .dark ? .white : AppTheme.accent)
                                 .frame(width: 2, height: 4)
                                 .offset(x: 10)
                             
                             // 电池电量
                             if deviceInfo.batteryLevel > 0 {
                                 RoundedRectangle(cornerRadius: 1)
-                                    .fill(Color(red: 0.34, green: 0.16, blue: 0.37))
+                                    .fill(colorScheme == .dark ? .white : AppTheme.accent)
                                     .frame(width: CGFloat(deviceInfo.batteryLevel) * 16 / 100, height: 7)
                                     .offset(x: -1)
                             }
@@ -138,19 +133,20 @@ struct CustomNavigationBar: View {
                         // 电量百分比
                         Text("\(deviceInfo.batteryLevel)%")
                             .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
+                            .foregroundColor(colorScheme == .dark ? .white : AppTheme.accent)
                     }
                     
                     // 手表图标
                     Image(systemName: deviceInfo.isConnected ? "applewatch" : "applewatch.slash")
-                        .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
+                        .foregroundColor(colorScheme == .dark ? .white : AppTheme.accent)
                         .font(.system(size: 18))
                 }
             }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
     }
 }
 
@@ -158,6 +154,7 @@ struct CustomNavigationBar: View {
 struct MessageNotificationView: View {
     @State private var showNotification = true
     @State private var showingHealthApps = false
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
@@ -169,7 +166,7 @@ struct MessageNotificationView: View {
                     HStack {
                         Text("Good morning, Jessica.")
                             .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.black)
+                            .foregroundColor(AppTheme.primaryText(colorScheme))
                         
                         Spacer()
                         
@@ -180,7 +177,7 @@ struct MessageNotificationView: View {
                         }) {
                             Image(systemName: "xmark")
                                 .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(Color(red: 0.67, green: 0.58, blue: 0.95))
+                                .foregroundColor(AppTheme.accent)
                         }
                     }
                     .padding(.horizontal, 16)
@@ -191,7 +188,7 @@ struct MessageNotificationView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("You have already linked your Apple Health data. Would you like to proceed with linking your Google Fit data for more comprehensive health tracking?")
                             .font(.system(size: 14, weight: .regular))
-                            .foregroundColor(Color(red: 0.24, green: 0.24, blue: 0.24))
+                            .foregroundColor(AppTheme.secondaryText(colorScheme))
                             .lineSpacing(2)
                             .multilineTextAlignment(.leading)
                     }
@@ -215,7 +212,7 @@ struct MessageNotificationView: View {
                                 Spacer()
                             }
                             .frame(height: 42)
-                            .background(Color.white)
+                            .background(AppTheme.cardBackground(colorScheme))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
                                     .stroke(Color.clear, lineWidth: 0)
@@ -235,7 +232,7 @@ struct MessageNotificationView: View {
                                 Spacer()
                             }
                             .frame(height: 42)
-                            .background(Color(red: 0.67, green: 0.58, blue: 0.95))
+                            .background(AppTheme.accent)
                             .cornerRadius(8)
                         }
                     }
@@ -243,11 +240,11 @@ struct MessageNotificationView: View {
                     .padding(.bottom, 16)
                     .padding(.top, 12)
                 }
-                .background(Color.white)
+                .background(AppTheme.cardBackground(colorScheme))
                 .cornerRadius(12)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color(red: 0.9, green: 0.91, blue: 0.92), lineWidth: 1)
+                        .stroke(AppTheme.separator, lineWidth: 1)
                 )
                 .padding(.top, 22)
                 .shadow(color: .black.opacity(0.05), radius: 4, x: 0, y: 2)
@@ -264,6 +261,7 @@ struct MessageNotificationView: View {
 struct HealthSummarySection: View {
     let healthData: [HealthSummary]
     @Binding var showingFloatingMenu: Bool
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 16) {
@@ -271,16 +269,18 @@ struct HealthSummarySection: View {
             HStack {
                 Text("Abstract")
                     .font(.system(size: 32, weight: .bold))
-                    .foregroundColor(.black)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
                 
+                // 右上角图片
                 Button(action: {}) {
                     Image(systemName: "ellipsis")
                         .font(.system(size: 18))
-                        .foregroundColor(.black)
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                         .rotationEffect(.degrees(90))
                 }
+
             }
             
             // 健康指标卡片 - 垂直排列四个卡片
@@ -301,9 +301,9 @@ struct HealthSummarySection: View {
                 }) {
                     Image(systemName: "plus")
                         .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(Color(red: 0.4, green: 0.26, blue: 0.65))
+                        .foregroundColor(AppTheme.accent)
                         .frame(width: 44, height: 44)
-                        .background(Color(red: 0.84, green: 0.8, blue: 0.98))
+                        .background(AppTheme.accent.opacity(0.18))
                         .clipShape(Circle())
                         .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
                 }
@@ -315,94 +315,131 @@ struct HealthSummarySection: View {
 // MARK: - 健康概要卡片
 struct HealthSummaryCard: View {
     let data: HealthSummary
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var showingBloodPressureSync = false
+    @State private var showingBloodGlucose = false
+    
+    // 计算属性：根据数据类型获取对应的图片名称
+    private var imageName: String {
+        switch data.type {
+        case .heartRate:
+            return "Image4"      // 第一行
+        case .bloodPressure:
+            return "Image5"      // 第二行
+        case .bloodSugar:
+            return "Image6"      // 第三行
+        case .bloodOxygen:
+            return "Image7"      // 第四行
+        }
+    }
     
     var body: some View {
-        HStack(spacing: 16) {
-            // 左边图标
-            Image(systemName: data.icon)
-                .font(.system(size: 30))
-                .foregroundColor(Color(red: 0.60, green: 0.39, blue: 0.95))
-                .frame(width: 40, height: 40)
-            
-            // 中间内容区域 - 垂直布局
-            VStack(alignment: .leading, spacing: 4) {
-                // 标题
-                Text(data.type.rawValue)
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
+        ZStack {
+            HStack(spacing: 12) {
+                // 左边图标
+                    Image(data.icon)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 36, height: 36)
                 
-                // 数值
-                HStack(spacing: 4) {
-                    Text(data.value)
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
+                // 中间内容区域 - 垂直布局
+                VStack(alignment: .leading, spacing: 4) {
+                    // 标题 - 使用更小的字体并限制行数
+                    Text(data.type.rawValue)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    if !data.unit.isEmpty {
-                        Text(data.unit)
-                            .font(.system(size: 12, weight: .regular))
-                            .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
+                    // 数值
+                    HStack(spacing: 4) {
+                        Text(data.value)
+                            .font(.system(size: 14, weight: .regular))
+                            .foregroundColor(AppTheme.primaryText(colorScheme))
+                        
+                        if !data.unit.isEmpty {
+                            Text(data.unit)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(AppTheme.secondaryText(colorScheme))
+                        }
                     }
+                    
+                    // 状态
+                    Text(data.status.rawValue)
+                        .font(.system(size: 11, weight: .regular))
+                        .foregroundColor(AppTheme.secondaryText(colorScheme))
                 }
-                
-                // 状态
-                Text(data.status.rawValue)
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
-            }
-            
-            Spacer()
-            
-            // 右边区域 - 图表和时间
-            VStack(alignment: .trailing, spacing: 8) {
-                // 右上角时间
-                Text(data.time)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Spacer()
                 
-                // 图表（如果有的话）
-                if let chartImage = data.chartImage {
-                    AsyncImage(url: Bundle.main.url(forResource: chartImage, withExtension: "png")) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.gray.opacity(0.2))
-                    }
-                    .frame(width: 75, height: 40)
-                }
+                // 右边区域 - 图表根据行数显示不同图片
+                Image(imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 140, height: 60)
             }
+            .overlay(
+                // 右上角时间
+                VStack {
+                    HStack {
+                        Spacer()
+                        Text(data.time)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(AppTheme.secondaryText(colorScheme))
+                            .padding(.top, -8)
+                            .padding(.trailing, -8)
+                    }
+                    Spacer()
+                }
+            )
         }
         .padding(16)
         .frame(height: 96)
-        .background(Color(red: 0.97, green: 0.96, blue: 1.0))
+        .background(AppTheme.elevatedCardBackground(colorScheme))
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 2)
+        .onTapGesture {
+            // 根据数据类型决定跳转到哪个视图
+            switch data.type {
+            case .bloodPressure:
+                showingBloodPressureSync = true
+            case .bloodSugar:
+                showingBloodGlucose = true
+            default:
+                break
+            }
+        }
+        .sheet(isPresented: $showingBloodPressureSync) {
+            BloodPressureSyncView()
+        }
+        .sheet(isPresented: $showingBloodGlucose) {
+            BloodGlucoseView()
+        }
     }
 }
 
 // MARK: - 椭圆形测试数值卡片区域
 struct TestValueCardsSection: View {
     let testValues = TestValue.sampleData
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         // 圆角矩形容器带阴影
         ZStack {
             // 圆角矩形背景
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color(red: 0.97, green: 0.96, blue: 1.0))
-                .frame(width: 350, height: 112)
+                .fill(AppTheme.elevatedCardBackground(colorScheme))
+                .frame(height: 112)
                 .shadow(color: .black.opacity(0.16), radius: 8, x: 0, y: 2)
             
             // 5个测试数值卡片
-            HStack(spacing: 8) {
+            HStack(spacing: 15) {
                 ForEach(testValues.indices, id: \.self) { index in
                     TestValueCard(testValue: testValues[index])
                 }
             }
-            .padding(.horizontal, 13)
         }
         .frame(height: 112)
     }
@@ -411,36 +448,38 @@ struct TestValueCardsSection: View {
 // MARK: - 单个椭圆形测试数值卡片
 struct TestValueCard: View {
     let testValue: TestValue
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 6) {
             // 图标
-            Image(systemName: testValue.icon)
-                .font(.system(size: 20))
-                .foregroundColor(Color(red: 0.60, green: 0.39, blue: 0.95))
-                .frame(height: 20)
+            Image(testValue.icon)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .clipShape(Circle())
+                .frame(width: 20, height: 20)
             
             // 状态指示器（椭圆形线图，有边框）
             ZStack {
                 // 椭圆背景（透明）
                 RoundedRectangle(cornerRadius: 3)
-                    .stroke(Color(red: 0.84, green: 0.80, blue: 0.98), lineWidth: 1)
+                    .stroke(AppTheme.accent.opacity(0.3), lineWidth: 1)
                     .frame(width: 59, height: 33)
                 
                 // 中间两条横线（表示正常范围）
                 VStack(spacing: 12) {
                     Rectangle()
-                        .fill(Color(red: 0.34, green: 0.16, blue: 0.37))
+                        .fill(AppTheme.accent)
                         .frame(width: 59, height: 3)
                     
                     Rectangle()
-                        .fill(Color(red: 0.34, green: 0.16, blue: 0.37))
+                        .fill(AppTheme.accent)
                         .frame(width: 59, height: 3)
                 }
                 
                 // 状态圆圈（空心）
                 Circle()
-                    .stroke(testValue.isNormal ? Color(red: 0.13, green: 0.95, blue: 0.10) : Color(red: 0.10, green: 0.27, blue: 0.95), lineWidth: 1)
+                    .stroke(testValue.isNormal ? Color.green : AppTheme.accent, lineWidth: 1)
                     .frame(width: 7, height: 7)
                     .offset(x: testValue.indicatorPosition, y: testValue.verticalPosition)
             }
@@ -449,16 +488,15 @@ struct TestValueCard: View {
                 // 数值
                 Text(testValue.value)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 // 单位
                 Text(testValue.unit)
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(Color(red: 0.34, green: 0.16, blue: 0.37))
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
             }
         }
         .frame(width: 59, height: 80)
-        // 移除了背景色、圆角和阴影
     }
 }
 
@@ -485,23 +523,23 @@ struct TestValue {
         var iconName: String {
             switch self {
             case .heartRate:
-                return "heart.fill"
+                return "Icon heart circle bolt"
             case .bloodPressure:
-                return "drop.fill"
+                return "Icon heart pulse"
             case .bloodSugar:
-                return "drop.triangle.fill"
+                return "Icon bloodtype"
             case .temperature:
-                return "thermometer"
+                return "Icon device thermostat"
             case .bloodOxygen:
-                return "lungs.fill"
+                return "Icon lungs"
             }
         }
     }
     
     static let sampleData: [TestValue] = [
         TestValue(type: .heartRate, value: "76", unit: "ms", isNormal: true, indicatorPosition: 0, verticalPosition: -8),
-        TestValue(type: .heartRate, value: "59", unit: "bpm", isNormal: true, indicatorPosition: 5, verticalPosition: -5),
-        TestValue(type: .bloodPressure, value: "14.3", unit: "BrPM", isNormal: true, indicatorPosition: -8, verticalPosition: -3),
+        TestValue(type: .bloodPressure, value: "59", unit: "bpm", isNormal: true, indicatorPosition: 5, verticalPosition: -5),
+        TestValue(type: .bloodOxygen, value: "14.3", unit: "BrPM", isNormal: true, indicatorPosition: -8, verticalPosition: -3),
         TestValue(type: .bloodSugar, value: "98", unit: "%", isNormal: true, indicatorPosition: 3, verticalPosition: -6),
         TestValue(type: .temperature, value: "34.5", unit: "℃", isNormal: false, indicatorPosition: -15, verticalPosition: 12)
     ]
@@ -541,7 +579,7 @@ struct FloatingActionMenu: View {
                             // 菜单选项
                             FloatingMenuItem(
                                 title: "Vital signs",
-                                icon: "pencil.and.wrench",
+                                icon: "pencil.slash",
                                 action: {
                                     showingVitalSigns = true
                                     onDismiss()
@@ -621,6 +659,7 @@ struct FloatingMenuItem: View {
     let title: String
     let icon: String
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         Button(action: action) {
@@ -639,8 +678,6 @@ struct FloatingMenuItem: View {
                         .font(.system(size: 20, weight: .medium))
                         .foregroundColor(.white)
                         .frame(width: 43, height: 43)
-                        .background(Color.white.opacity(0.1))
-                        .clipShape(Circle())
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)

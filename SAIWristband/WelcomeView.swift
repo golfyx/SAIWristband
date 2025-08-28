@@ -9,6 +9,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     @EnvironmentObject var appState: AppState
+    @Environment(\.colorScheme) private var colorScheme
     @State private var showingLogin = false
     @State private var showingSignUp = false
     
@@ -21,7 +22,7 @@ struct WelcomeView: View {
                 // 背景层 - 完全独立，不影响布局
                 Color.clear
                     .background(
-                        Image("Image2")
+                        Image(colorScheme == .dark ? "Image1" : "Image2")
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                     )
@@ -95,6 +96,7 @@ private struct PrimaryButton: View {
     let width: CGFloat
     let height: CGFloat
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         Button(action: action) {
@@ -106,9 +108,10 @@ private struct PrimaryButton: View {
                 Spacer()
             }
             .frame(width: width, height: height)
-            .background(Color(red: 123/255, green: 43/255, blue: 177/255)) // #7B2BB1
-            .cornerRadius(8)
-            .shadow(color: Color.black.opacity(0.16), radius: 4, x: 0, y: 2)
+            .background(AppTheme.primary)
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(colorScheme == .dark ? 0.5 : 0.16), radius: 6, x: 0, y: 3)
+            .glassBackground(RoundedRectangle(cornerRadius: 12), opacity: colorScheme == .dark ? 0.9 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -118,19 +121,20 @@ private struct PrimaryButton: View {
 private struct PageDot: View {
     let isActive: Bool
     let size: CGFloat
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color.white)
+                .fill(colorScheme == .dark ? Color.white.opacity(0.8) : Color.white)
                 .frame(width: size, height: size)
             if isActive {
                 Circle()
-                    .fill(Color(red: 123/255, green: 43/255, blue: 177/255))
+                    .fill(AppTheme.primary)
                     .frame(width: size - 2, height: size - 2)
             } else {
                 Circle()
-                    .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                    .stroke(Color.gray.opacity(colorScheme == .dark ? 0.6 : 0.4), lineWidth: 1)
                     .frame(width: size - 2, height: size - 2)
             }
         }

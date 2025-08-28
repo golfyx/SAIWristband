@@ -1,137 +1,147 @@
-# SAIWristband - 健康手表应用
+# SAIWristband
 
-## 项目概述
-
-SAIWristband 是一个基于 SwiftUI 开发的健康手表应用，提供健康数据监测、设备管理等功能。
+一个智能手环健康管理应用，支持白天/夜晚模式切换。
 
 ## 功能特性
 
-### 主要页面
+- 健康数据管理
+- 设备连接
+- 个人档案
+- 健康报告
+- 成就系统
+- 白天/夜晚模式支持
 
-1. **首页 (HomeView)**
-   - 健康概要展示
-   - 测试数值卡片
-   - 时间线事件
-   - 浮动操作菜单
+## 白天/夜晚模式主题系统
 
-2. **Vital Signs 页面 (VitalSignsView)** ✨ **新功能**
-   - 自定义导航栏（带返回按钮和标题）
-   - Add Health Data 部分
-     - 体重 (Weight)
-     - 血压 (Blood Pressure) 
-     - 血糖 (Blood Sugar)
-   - Select Tests to Start 部分
-     - 心率 (Heart Rate)
-     - 血氧 (Blood Oxygen)
-     - 心电 (Electrocardiogram)
-     - 呼吸 (Respiration)
+### 概述
 
-3. **设备管理页面 (DeviceManagementView)**
-4. **个人资料页面 (ProfileView)**
+应用内置了完整的白天/夜晚模式主题系统，能够根据系统设置自动切换，也支持手动切换。
 
-### 技术架构
+### 主题特点
 
-- **框架**: SwiftUI + Swift
-- **iOS 版本**: iOS 16.0+
-- **依赖管理**: CocoaPods
-- **设计规范**: 严格遵循 iOS HIG 设计规范
+#### 白天模式
+- 白色背景
+- 深色文字
+- 浅色卡片
+- 柔和阴影
+
+#### 夜晚模式
+- 黑色背景
+- 白色文字
+- 深色卡片
+- 增强阴影
+
+### 使用方法
+
+#### 1. 自动主题切换
+
+应用会自动跟随系统的外观设置：
+
+```swift
+@Environment(\.colorScheme) private var colorScheme
+
+// 使用主题颜色
+.background(AppTheme.background(colorScheme))
+.foregroundColor(AppTheme.primaryText(colorScheme))
+```
+
+#### 2. 手动主题切换
+
+使用主题管理器进行手动切换：
+
+```swift
+@StateObject private var themeManager = ThemeManager()
+
+// 切换主题
+Button("切换主题") {
+    themeManager.toggleTheme()
+}
+
+// 设置特定主题
+themeManager.setTheme(true)  // 夜晚模式
+themeManager.setTheme(false) // 白天模式
+```
+
+#### 3. 主题颜色使用
+
+```swift
+// 背景色
+AppTheme.background(colorScheme)
+AppTheme.cardBackground(colorScheme)
+AppTheme.elevatedCardBackground(colorScheme)
+
+// 文字颜色
+AppTheme.primaryText(colorScheme)
+AppTheme.secondaryText(colorScheme)
+AppTheme.tertiaryText(colorScheme)
+
+// 分割线和阴影
+AppTheme.dividerColor(colorScheme)
+AppTheme.separatorColor(colorScheme)
+AppTheme.shadowColor(colorScheme)
+```
+
+### 主题组件
+
+#### 卡片组件
+- `cardBackground`: 基础卡片背景
+- `elevatedCardBackground`: 提升卡片背景
+- `card1Background` 到 `card14Background`: 特殊卡片背景
+
+#### 文字组件
+- `primaryText`: 主要文字
+- `secondaryText`: 次要文字
+- `tertiaryText`: 第三级文字
+
+#### 分割线组件
+- `dividerColor`: 主要分割线
+- `separatorColor`: 次要分割线
+
+### 在ProfileView中的应用
+
+ProfileView展示了完整的主题系统应用：
+
+1. **导航栏**: 使用主题背景和文字颜色
+2. **个人信息卡片**: 应用提升卡片背景和阴影
+3. **健康报告区域**: 使用卡片背景和分割线
+4. **成就展示**: 应用特殊卡片背景
+5. **记录值区域**: 使用提升卡片背景
+6. **提醒设置**: 应用卡片背景和阴影
+
+### 扩展其他界面
+
+要在其他界面应用主题系统：
+
+1. 导入主题系统
+2. 使用 `@Environment(\.colorScheme)` 获取当前主题
+3. 替换硬编码的颜色为 `AppTheme` 函数
+4. 测试白天/夜晚模式效果
+
+### 最佳实践
+
+1. **一致性**: 在整个应用中保持颜色使用的一致性
+2. **对比度**: 确保文字在两种主题下都有足够的对比度
+3. **测试**: 在两种主题模式下测试所有界面
+4. **性能**: 避免在渲染过程中动态计算颜色
+
+## 技术架构
+
+- SwiftUI
+- iOS 18+ Glass Material 支持
+- 响应式设计
+- 主题管理系统
 
 ## 安装和运行
 
-### 环境要求
-
-- Xcode 15.0+
-- iOS 16.0+
-- CocoaPods
-
-### 安装步骤
-
 1. 克隆项目
-```bash
-git clone [项目地址]
-cd SAIWristband
-```
+2. 使用 Xcode 打开 `SAIWristband.xcworkspace`
+3. 选择目标设备或模拟器
+4. 运行项目
 
-2. 安装依赖
-```bash
-pod install
-```
+## 贡献
 
-3. 打开工作空间
-```bash
-open SAIWristband.xcworkspace
-```
-
-4. 选择目标设备（模拟器或真机）并运行
-
-## 使用说明
-
-### 访问 Vital Signs 页面
-
-1. 在首页点击右下角的加号按钮
-2. 在弹出的浮动菜单中选择 "Vital signs"
-3. 页面将以模态形式展示
-
-### 页面功能
-
-- **返回导航**: 点击左上角返回箭头可返回首页
-- **健康数据添加**: 点击体重、血压、血糖按钮可添加相应健康数据
-- **测试选择**: 点击心率、血氧、心电、呼吸按钮可选择开始相应测试
-
-## 设计特点
-
-- **响应式设计**: 支持不同尺寸的 iPhone 设备
-- **iOS HIG 规范**: 严格遵循 Apple 人机界面指南
-- **现代化 UI**: 使用圆角、阴影等现代设计元素
-- **无障碍支持**: 支持动态字体和 VoiceOver
-
-## 项目结构
-
-```
-SAIWristband/
-├── SAIWristband/
-│   ├── Views/
-│   │   ├── HomeView.swift          # 首页
-│   │   ├── VitalSignsView.swift    # Vital Signs 页面 ✨
-│   │   ├── DeviceManagementView.swift
-│   │   ├── ProfileView.swift
-│   │   └── Components/
-│   ├── Models/
-│   │   ├── HealthData.swift
-│   │   ├── DeviceData.swift
-│   │   └── AppState.swift
-│   └── SAIWristbandApp.swift
-├── Assets.xcassets/                 # 图片资源
-├── Podfile                          # CocoaPods 配置
-└── README.md
-```
-
-## 开发说明
-
-### 添加新功能
-
-1. 在 `Views/` 目录下创建新的 SwiftUI 视图文件
-2. 在相应的模型文件中添加数据模型
-3. 更新导航逻辑以包含新页面
-
-### 样式规范
-
-- 使用项目预定义的颜色常量
-- 遵循 iOS 设计规范中的间距和尺寸标准
-- 支持深色模式（如果实现）
-
-## 贡献指南
-
-1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 推送到分支
-5. 创建 Pull Request
+欢迎提交 Issue 和 Pull Request 来改进项目。
 
 ## 许可证
 
-[许可证信息]
-
-## 联系方式
-
-[联系信息]
+MIT License

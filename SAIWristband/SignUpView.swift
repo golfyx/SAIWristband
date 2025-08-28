@@ -10,6 +10,7 @@ import SwiftUI
 struct SignUpView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var appState: AppState
+    @Environment(\.colorScheme) private var colorScheme
     
     @State private var email: String = ""
     @State private var verificationCode: String = ""
@@ -34,8 +35,8 @@ struct SignUpView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                // 整体白色背景
-                Color.white
+                // 整体背景
+                AppTheme.background(colorScheme)
                     .ignoresSafeArea()
                 
                 ScrollView {
@@ -46,7 +47,7 @@ struct SignUpView: View {
                                 .frame(height: scaled(73.5))
                             
                             // HealthWatch Logo
-                            Image("health_watch_logo")
+                            Image("Image3")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: scaled(132), height: scaled(134))
@@ -59,16 +60,16 @@ struct SignUpView: View {
                         // 标题区域
                         VStack(spacing: scaled(10)) {
                             // HealthWatch 主标题
-                            Text("HealthWatch")
+                            Text("AINNIA")
                                 .font(.system(size: scaled(34), weight: .bold, design: .monospaced))
-                                .foregroundColor(Color(red: 0.22, green: 0.08, blue: 0.24)) // #38143E
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
                             
                             // 副标题
                             Text("Sign up for health insights")
                                 .font(.system(size: scaled(16), weight: .regular, design: .monospaced))
-                                .foregroundColor(Color(red: 0.22, green: 0.08, blue: 0.24)) // #38143E
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.8)
                         }
@@ -84,7 +85,7 @@ struct SignUpView: View {
                                 HStack {
                                     Text("Email *")
                                         .font(.system(size: scaled(14), weight: .bold, design: .monospaced))
-                                        .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37)) // #572D5F
+                                        .foregroundColor(AppTheme.primaryText(colorScheme))
                                     Spacer()
                                 }
                                 .padding(.horizontal, scaled(24))
@@ -112,7 +113,7 @@ struct SignUpView: View {
                                 HStack {
                                     Text("Verification Code *")
                                         .font(.system(size: scaled(14), weight: .bold, design: .monospaced))
-                                        .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37)) // #572D5F
+                                        .foregroundColor(AppTheme.primaryText(colorScheme))
                                     Spacer()
                                 }
                                 .padding(.horizontal, scaled(24))
@@ -148,13 +149,13 @@ struct SignUpView: View {
                                 Spacer()
                             }
                             .frame(width: scaled(334), height: scaled(47))
-                            .background(Color(red: 0.6, green: 0.1, blue: 0.95)) // #9A1AF2
+                            .background(AppTheme.accent)
                             .cornerRadius(0) // 无圆角，符合设计
                             .overlay(
                                 RoundedRectangle(cornerRadius: 0)
                                     .stroke(Color.black, lineWidth: 1)
                             )
-                            .shadow(color: .black.opacity(0.8), radius: 0, x: 2, y: 2) // 2px 2px 阴影
+                            .shadow(color: .black.opacity(AppTheme.elevatedShadowOpacity(colorScheme)), radius: 0, x: 2, y: 2) // 2px 2px 阴影
                         }
                         .buttonStyle(PlainButtonStyle())
                         .disabled(isLoading || email.isEmpty || verificationCode.isEmpty)
@@ -168,7 +169,7 @@ struct SignUpView: View {
                             // 左侧文字
                             Text("Already a member?")
                                 .font(.system(size: scaled(14), weight: .regular, design: .monospaced))
-                                .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37)) // #572D5F
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
                             
                             // 右侧登录按钮
                             Button(action: {
@@ -177,14 +178,14 @@ struct SignUpView: View {
                                 HStack(spacing: scaled(2)) {
                                     Text("Log")
                                         .font(.system(size: scaled(14), weight: .bold, design: .monospaced))
-                                        .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37)) // #572D5F
+                                        .foregroundColor(AppTheme.primaryText(colorScheme))
                                     Text("in")
                                         .font(.system(size: scaled(14), weight: .bold, design: .monospaced))
-                                        .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37)) // #572D5F
+                                        .foregroundColor(AppTheme.primaryText(colorScheme))
                                 }
                                 .padding(.horizontal, scaled(9))
                                 .padding(.vertical, scaled(2.5))
-                                .background(Color.white)
+                                .background(AppTheme.cardBackground(colorScheme))
                                 .cornerRadius(scaled(4))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: scaled(4))
@@ -289,6 +290,7 @@ struct CustomInputField: View {
     let keyboardType: UIKeyboardType
     let showVisibilityToggle: Bool
     let iconName: String?
+    @Environment(\.colorScheme) private var colorScheme
     
     @State private var isSecure: Bool = true
     @FocusState private var isFocused: Bool
@@ -307,12 +309,12 @@ struct CustomInputField: View {
         ZStack {
             // 输入框背景
             RoundedRectangle(cornerRadius: 0)
-                .fill(Color.white)
+                .fill(AppTheme.cardBackground(colorScheme))
                 .frame(height: scaled(48))
                 .background(
                     RoundedRectangle(cornerRadius: 0)
                         .fill(Color(red: 0.9, green: 0.9, blue: 0.9).opacity(0.6)) // rgba(230, 230, 230, 0.6)
-                        .shadow(color: .black.opacity(0.16), radius: 4, x: 0, y: 2)
+                        .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 4, x: 0, y: 2)
                 )
             
             HStack {
@@ -328,11 +330,11 @@ struct CustomInputField: View {
                     }
                 }
                 .font(.system(size: scaled(14), weight: .regular, design: .monospaced))
-                .foregroundColor(Color(red: 0.29, green: 0.29, blue: 0.29)) // #4B4B4B
+                .foregroundColor(AppTheme.primaryText(colorScheme))
                 .placeholder(when: text.isEmpty) {
                     Text(placeholder)
                         .font(.system(size: scaled(14), weight: .regular, design: .monospaced))
-                        .foregroundColor(Color(red: 0.29, green: 0.29, blue: 0.29)) // #4B4B4B
+                        .foregroundColor(AppTheme.secondaryText(colorScheme))
                 }
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
@@ -345,7 +347,7 @@ struct CustomInputField: View {
                     if let iconName = iconName {
                         Image(systemName: iconName)
                             .font(.system(size: scaled(14)))
-                            .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37)) // #572D5F
+                            .foregroundColor(AppTheme.accent)
                     }
                 }
             }

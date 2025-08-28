@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FullTimelineView: View {
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.colorScheme) private var colorScheme
     @State private var selectedDateIndex: Int = 0
     private let weekDates: [DateItem] = DateItem.makeWeek(startingFromMonday: true, days: 7)
     @State private var calories: CaloriesOverview = .mock
@@ -32,14 +33,14 @@ struct FullTimelineView: View {
                         Button(action: { presentationMode.wrappedValue.dismiss() }) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 16 * scale, weight: .medium))
-                                .foregroundColor(Color(hex: "AE8EB7"))
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
                         }
 
                         Spacer()
 
                         Text("Timeline")
                             .font(.system(size: 18 * scale, weight: .regular))
-                            .foregroundColor(Color(hex: "5B009D"))
+                            .foregroundColor(AppTheme.accent)
 
                         Spacer()
 
@@ -56,7 +57,7 @@ struct FullTimelineView: View {
                         .fill(Color.gray.opacity(0.3))
                         .frame(height: 0.5)
                 }
-                .background(Color.white)
+                .background(AppTheme.cardBackground(colorScheme))
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24 * scale) {
@@ -72,9 +73,14 @@ struct FullTimelineView: View {
                     .padding(.horizontal, 16 * scale)
                     .padding(.vertical, 16 * scale)
                 }
-                .background(Color.white)
+                .background(AppTheme.background(colorScheme))
             }
             .navigationBarHidden(true)
+            .onAppear {
+                if let todayIndex = weekDates.firstIndex(where: { Calendar.current.isDateInToday($0.date) }) {
+                    selectedDateIndex = todayIndex
+                }
+            }
         }
     }
 
@@ -94,16 +100,16 @@ struct FullTimelineView: View {
                         VStack(spacing: 6 * scale) {
                             Text(item.dayString)
                                 .font(.system(size: 16 * scale, weight: .semibold))
-                                .foregroundColor(selectedDateIndex == index ? Color.white : Color(hex: "5B009D"))
+                                .foregroundColor(selectedDateIndex == index ? Color.white : AppTheme.accent)
                             Text(item.weekdayString)
                                 .font(.system(size: 12 * scale))
-                                .foregroundColor(selectedDateIndex == index ? Color.white.opacity(0.9) : Color(hex: "701E9B").opacity(0.7))
+                                .foregroundColor(selectedDateIndex == index ? Color.white.opacity(0.9) : AppTheme.accent.opacity(0.7))
                         }
                         .padding(.horizontal, 12 * scale)
                         .padding(.vertical, 10 * scale)
                         .background(
                             Group {
-                                if selectedDateIndex == index { RoundedRectangle(cornerRadius: 12 * scale).fill(Color(hex: "701EA6")) } else { Color.clear }
+                                if selectedDateIndex == index { RoundedRectangle(cornerRadius: 12 * scale).fill(AppTheme.accent) } else { Color.clear }
                             }
                         )
                         .accessibilityElement(children: .combine)
@@ -121,7 +127,7 @@ struct FullTimelineView: View {
 
     private func separatorView(height: CGFloat) -> some View {
         Rectangle()
-            .fill(Color(hex: "E0D4EC"))
+            .fill(AppTheme.separator)
             .frame(width: 1, height: height)
     }
 
@@ -132,7 +138,7 @@ struct FullTimelineView: View {
             VStack(alignment: .leading, spacing: 8 * scale) {
                 Text("Calories")
                     .font(.system(size: 18 * scale, weight: .semibold))
-                    .foregroundColor(Color(hex: "5B009D"))
+                    .foregroundColor(AppTheme.accent)
                 
                 VStack(spacing: 0) {
                     VStack(spacing: 18 * scale) {
@@ -164,7 +170,7 @@ struct FullTimelineView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 190 * scale) // 写死高度：右侧两个卡片总高度
-                .background(Color(hex: "CFAEF0"))
+                .background(AppTheme.elevatedCard111Background(colorScheme))
                 .cornerRadius(16 * scale)
                 .shadow(color: Color.black.opacity(0.16), radius: 8 * scale, x: 0, y: 2 * scale)
             }
@@ -175,18 +181,18 @@ struct FullTimelineView: View {
                 VStack(alignment: .leading, spacing: 8 * scale) {
                     Text("Activity")
                         .font(.system(size: 18 * scale, weight: .semibold))
-                        .foregroundColor(Color(hex: "5B009D"))
+                        .foregroundColor(AppTheme.accent)
                     VStack(alignment: .leading, spacing: 6 * scale) {
                         Text("\(activity.steps.formatted(.number.grouping(.automatic)))")
                             .font(.system(size: 24 * scale, weight: .bold))
-                            .foregroundColor(Color(hex: "5B009D"))
+                            .foregroundColor(AppTheme.accent)
                         Text("step")
                             .font(.system(size: 12 * scale))
-                            .foregroundColor(Color(hex: "701E9B").opacity(0.8))
+                            .foregroundColor(AppTheme.accent.opacity(0.8))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(14 * scale)
-                    .background(Color(hex: "EDE6F2"))
+                    .background(AppTheme.cardBackground(colorScheme))
                     .cornerRadius(16 * scale)
                     .shadow(color: Color.black.opacity(0.12), radius: 6 * scale, x: 0, y: 2 * scale)
                 }
@@ -195,18 +201,18 @@ struct FullTimelineView: View {
                 VStack(alignment: .leading, spacing: 8 * scale) {
                     Text("Sleep quality")
                         .font(.system(size: 18 * scale, weight: .semibold))
-                        .foregroundColor(Color(hex: "5B009D"))
+                        .foregroundColor(AppTheme.accent)
                     VStack(alignment: .leading, spacing: 6 * scale) {
                         Text("Score: \(sleep.score)")
                             .font(.system(size: 20 * scale, weight: .bold))
-                            .foregroundColor(Color(hex: "5B009D"))
+                            .foregroundColor(AppTheme.accent)
                         Text(sleep.durationText)
                             .font(.system(size: 12 * scale))
-                            .foregroundColor(Color(hex: "701E9B").opacity(0.8))
+                            .foregroundColor(AppTheme.accent.opacity(0.8))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(14 * scale)
-                    .background(Color(hex: "E3CEF2"))
+                    .background(AppTheme.elevatedCardBackground(colorScheme))
                     .cornerRadius(16 * scale)
                     .shadow(color: Color.black.opacity(0.12), radius: 6 * scale, x: 0, y: 2 * scale)
                 }
@@ -218,10 +224,10 @@ struct FullTimelineView: View {
         VStack(alignment: .leading, spacing: 4 * scale) {
             Text(title)
                 .font(.system(size: 12 * scale))
-                .foregroundColor(Color(hex: "701E9B").opacity(0.9))
+                .foregroundColor(AppTheme.accent.opacity(0.9))
             Text(value)
                 .font(.system(size: 18 * scale, weight: .semibold))
-                .foregroundColor(Color(hex: "5B009D"))
+                .foregroundColor(AppTheme.accent)
         }
     }
 
@@ -235,10 +241,10 @@ struct FullTimelineView: View {
                     VStack(spacing: 6 * scale) {
                         Text(formattedMeridiemTime(group.time))
                             .font(.system(size: 12 * scale, weight: .bold))
-                            .foregroundColor(Color(hex: "5B009D").opacity(0.9))
+                            .foregroundColor(AppTheme.accent.opacity(0.9))
                             .frame(height: firstEventHeights[index] ?? 0, alignment: .center)
                         Rectangle()
-                            .fill(Color(hex: "AE8EB7").opacity(0.3))
+                            .fill(AppTheme.separator.opacity(0.3))
                             .frame(width: 2 * scale)
                             .frame(maxHeight: .infinity)
                     }
@@ -250,12 +256,12 @@ struct FullTimelineView: View {
                             let event = group.events[eIndex]
                             Text(event.content)
                                 .font(.system(size: 14 * scale))
-                                .foregroundColor(Color(hex: "38143E"))
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
                                 .multilineTextAlignment(.center)
                                 .frame(maxWidth: .infinity, alignment: .center)
                                 .padding(.horizontal, 12 * scale)
                                 .padding(.vertical, 10 * scale)
-                                .background(Color.white)
+                                .background(AppTheme.cardBackground(colorScheme))
                                 .cornerRadius(12 * scale)
                                 .shadow(color: Color.black.opacity(0.08), radius: 4 * scale, x: 0, y: 2 * scale)
                                 .background(

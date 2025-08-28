@@ -11,6 +11,7 @@ struct ShoppingView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var currentBannerIndex = 0
     @State private var searchText = ""
+    @Environment(\.colorScheme) private var colorScheme
     
     // 轮播图数据
     private let bannerImages = ["banner_image"]
@@ -52,19 +53,15 @@ struct ShoppingView: View {
                         ProductGridView(products: products)
                     }
                     .padding(16)
-                    .background(Color(red: 0.99, green: 0.96, blue: 1.0))
-                    .cornerRadius(12)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                    )
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
+                    .background(AppTheme.card10Background(colorScheme))
+                    .cornerRadius(20)
+                    .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 2, x: 0, y: 2)
                     .padding(.horizontal, 16)
                 }
                 .padding(.top, 16)
             }
         }
-        .background(Color.white)
+        .background(AppTheme.background(colorScheme))
         .navigationBarHidden(true)
     }
 }
@@ -73,6 +70,7 @@ struct ShoppingView: View {
 struct ShoppingNavigationBar: View {
     let title: String
     let onBack: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -80,14 +78,14 @@ struct ShoppingNavigationBar: View {
                 Button(action: onBack) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                 }
                 
                 Spacer()
                 
                 Text(title)
                     .font(.system(size: 18, weight: .regular))
-                    .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
                 
@@ -105,7 +103,8 @@ struct ShoppingNavigationBar: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(height: 0.5)
         }
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
     }
 }
@@ -114,17 +113,18 @@ struct ShoppingNavigationBar: View {
 struct BannerCarousel: View {
     let images: [String]
     @Binding var currentIndex: Int
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         ZStack {
             // 轮播图背景
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(red: 0.99, green: 0.96, blue: 1.0))
+                .fill(AppTheme.elevatedCardBackground(colorScheme))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                 )
-                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
+                .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 4, x: 0, y: 2)
             
             // 轮播图内容
             if !images.isEmpty {
@@ -150,6 +150,7 @@ struct BannerCarousel: View {
 // MARK: - 搜索框
 struct ShoppingSearchBar: View {
     @Binding var text: String
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack(spacing: 12) {
@@ -157,23 +158,21 @@ struct ShoppingSearchBar: View {
             HStack {
                 TextField("Search courses", text: $text)
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color(red: 0.74, green: 0.60, blue: 0.82))
+                    .foregroundColor(AppTheme.primary11Text(colorScheme))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
             }
-            .background(Color(red: 0.98, green: 0.98, blue: 0.98))
+            .background(AppTheme.cardBackground(colorScheme))
             .cornerRadius(8)
+            .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 2, x: 0, y: 2)
             
             // 搜索按钮
             Button(action: {
                 // 处理搜索
             }) {
                 Image(systemName: "magnifyingglass")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Color(red: 0.48, green: 0.29, blue: 0.59))
-                    .frame(width: 37, height: 37)
-                    .background(Color.white)
-                    .cornerRadius(8)
+                    .font(.system(size: 25, weight: .medium))
+                    .foregroundColor(AppTheme.accent)
             }
         }
     }
@@ -182,6 +181,7 @@ struct ShoppingSearchBar: View {
 // MARK: - 商品分类滚动视图
 struct CategoryScrollView: View {
     let categories: [String]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -190,14 +190,14 @@ struct CategoryScrollView: View {
                     HStack(spacing: 0) {
                         Text(category)
                             .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(Color(red: 0.61, green: 0.31, blue: 0.59))
+                            .foregroundColor(AppTheme.primary12Text(colorScheme))
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
                         
                         // 分隔线（除了最后一个）
                         if index < categories.count - 1 {
                             Rectangle()
-                                .fill(Color(red: 0.84, green: 0.71, blue: 0.83))
+                                .fill(AppTheme.primary13Text(colorScheme))
                                 .frame(width: 3, height: 20)
                                 .padding(.horizontal, 8)
                         }
@@ -211,6 +211,7 @@ struct CategoryScrollView: View {
 // MARK: - 商品网格视图
 struct ProductGridView: View {
     let products: [Product]
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         LazyVGrid(columns: [
@@ -227,43 +228,34 @@ struct ProductGridView: View {
 // MARK: - 商品卡片
 struct ProductCard: View {
     let product: Product
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 12) {
             // 商品图片
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(product.backgroundColor)
-                    .frame(width: 80, height: 80)
-                    .shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 0)
-                
-                Image(product.imageName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 60, height: 60)
-            }
+            Image(product.imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 60, height: 60)
+                .cornerRadius(12)
             
             // 商品名称
             Text(product.name)
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(Color(red: 0.38, green: 0.18, blue: 0.5))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
                 .lineLimit(1)
                 .multilineTextAlignment(.center)
             
             // 价格
             Text(product.price)
                 .font(.system(size: 12, weight: .bold))
-                .foregroundColor(Color(red: 0.62, green: 0.27, blue: 0.6))
+                .foregroundColor(AppTheme.accent)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(Color.white)
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-        )
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
+        .background( (product.id == 1 || product.id == 4) ? AppTheme.card14Background(colorScheme) : AppTheme.cardBackground(colorScheme))
+        .cornerRadius(20)
+        .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 2, x: 0, y: 2)
     }
 }
 

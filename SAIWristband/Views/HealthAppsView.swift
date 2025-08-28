@@ -9,18 +9,19 @@ import SwiftUI
 
 struct HealthAppsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     @State private var authorizedApps: [HealthApp] = [
-        HealthApp(name: "Apple Health", iconName: "heart.fill", isEnabled: true, color: Color(red: 0.61, green: 0.31, blue: 0.59)),
-        HealthApp(name: "Samsung Health", iconName: "heart.fill", isEnabled: true, color: Color(red: 0.61, green: 0.31, blue: 0.59)),
-        HealthApp(name: "Google Health", iconName: "heart.fill", isEnabled: false, color: Color(red: 0.61, green: 0.31, blue: 0.59)),
-        HealthApp(name: "Withings", iconName: "heart.fill", isEnabled: true, color: Color(red: 0.61, green: 0.31, blue: 0.59))
+        HealthApp(name: "Apple Health", imageName: "Image18", isEnabled: true),
+        HealthApp(name: "Samsung Health", imageName: "Image19", isEnabled: true),
+        HealthApp(name: "Google Health", imageName: "Image20", isEnabled: true),
+        HealthApp(name: "Withings", imageName: "Image21", isEnabled: true)
     ]
     
     @State private var unauthorizedApps: [HealthApp] = [
-        HealthApp(name: "Whoop", iconName: "heart.fill", isEnabled: false, color: Color(red: 0.31, green: 0.33, blue: 0.61)),
-        HealthApp(name: "Oura", iconName: "heart.fill", isEnabled: false, color: Color(red: 0.31, green: 0.33, blue: 0.61)),
-        HealthApp(name: "Garmin", iconName: "heart.fill", isEnabled: false, color: Color(red: 0.31, green: 0.33, blue: 0.61)),
-        HealthApp(name: "Hearty", iconName: "heart.fill", isEnabled: false, color: Color(red: 0.31, green: 0.33, blue: 0.61))
+        HealthApp(name: "Whoop", imageName: "Image22", isEnabled: false),
+        HealthApp(name: "Oura", imageName: "Image23", isEnabled: false),
+        HealthApp(name: "Garmin", imageName: "Image24", isEnabled: false),
+        HealthApp(name: "Hearty", imageName: "Image25", isEnabled: false)
     ]
     
     var body: some View {
@@ -35,12 +36,11 @@ struct HealthAppsView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Authorized")
                             .font(.system(size: 20, weight: .regular))
-                            .foregroundColor(Color(red: 0.36, green: 0.0, blue: 0.62))
+                            .foregroundColor(AppTheme.primary7Text(colorScheme))
                             .padding(.horizontal, 16)
                         
                         HealthAppsCard(
-                            apps: $authorizedApps,
-                            backgroundColor: Color(red: 0.99, green: 0.96, blue: 1.0)
+                            apps: $authorizedApps
                         )
                     }
                     
@@ -48,19 +48,18 @@ struct HealthAppsView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Unauthorized")
                             .font(.system(size: 20, weight: .regular))
-                            .foregroundColor(Color(red: 0.36, green: 0.0, blue: 0.62))
+                            .foregroundColor(AppTheme.primary7Text(colorScheme))
                             .padding(.horizontal, 16)
                         
                         HealthAppsCard(
-                            apps: $unauthorizedApps,
-                            backgroundColor: Color(red: 0.99, green: 0.96, blue: 1.0)
+                            apps: $unauthorizedApps
                         )
                     }
                 }
                 .padding(.top, 16)
             }
         }
-        .background(Color.white)
+        .background(AppTheme.background(colorScheme))
         .navigationBarHidden(true)
     }
 }
@@ -69,6 +68,7 @@ struct HealthAppsView: View {
 struct HealthAppsNavigationBar: View {
     @Environment(\.dismiss) private var dismiss
     let title: String
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -78,14 +78,14 @@ struct HealthAppsNavigationBar: View {
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                        .foregroundColor(AppTheme.primaryText(colorScheme))
                 }
                 
                 Spacer()
                 
                 Text(title)
                     .font(.system(size: 18, weight: .regular))
-                    .foregroundColor(Color(red: 0.01, green: 0.01, blue: 0.01))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
                 
@@ -103,7 +103,8 @@ struct HealthAppsNavigationBar: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(height: 0.5)
         }
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
     }
 }
@@ -111,7 +112,7 @@ struct HealthAppsNavigationBar: View {
 // MARK: - 健康应用卡片
 struct HealthAppsCard: View {
     @Binding var apps: [HealthApp]
-    let backgroundColor: Color
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -122,7 +123,7 @@ struct HealthAppsCard: View {
                     // 添加分割线，最后一个不添加
                     if index < apps.count - 1 {
                         Rectangle()
-                            .fill(Color(red: 0.31, green: 0.33, blue: 0.61))
+                            .fill(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "9B4F96"))
                             .frame(height: 1)
                             .padding(.horizontal, 28)
                     }
@@ -130,8 +131,12 @@ struct HealthAppsCard: View {
             }
         }
         .padding(.vertical, 16)
-        .background(backgroundColor)
+        .background(colorScheme == .dark ? Color(hex: "191919") : AppTheme.primary10)
         .cornerRadius(8)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(colorScheme == .dark ? Color(hex: "9A1AF2").opacity(0.3) : Color.clear, lineWidth: 1)
+        )
         .shadow(color: .black.opacity(0.25), radius: 2, x: -2, y: 2)
         .padding(.horizontal, 16)
     }
@@ -140,34 +145,31 @@ struct HealthAppsCard: View {
 // MARK: - 健康应用行
 struct HealthAppRow: View {
     @Binding var app: HealthApp
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) { // 减少间距从16到12
             // 应用图标
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(app.color.opacity(0.1))
-                    .frame(width: 40, height: 40)
-                
-                Image(systemName: app.iconName)
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(app.color)
-            }
+            Image(app.imageName)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 40, height: 40)
+                .cornerRadius(12)
             
-            // 应用名称
+            // 应用名称 - 调整布局确保文字完整显示
             Text(app.name)
                 .font(.system(size: 16, weight: .regular))
-                .foregroundColor(app.color)
+                .foregroundColor(AppTheme.primary12Text(colorScheme))
                 .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
             
-            Spacer()
-            
-            // 开关按钮
+            // 开关按钮 - 进一步缩小尺寸
             Toggle("", isOn: $app.isEnabled)
-                .toggleStyle(SwitchToggleStyle(tint: app.color))
-                .scaleEffect(0.8)
+                .toggleStyle(SwitchToggleStyle(tint: colorScheme == .dark ? Color(hex: "9A1AF2") : AppTheme.primary12))
+                .scaleEffect(0.7) // 从0.8减少到0.7
+                .frame(width: 40) // 固定开关按钮的宽度
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, 20) // 减少水平内边距从24到20
         .padding(.vertical, 12)
     }
 }
@@ -176,9 +178,8 @@ struct HealthAppRow: View {
 struct HealthApp: Identifiable {
     let id = UUID()
     let name: String
-    let iconName: String
+    let imageName: String
     var isEnabled: Bool
-    let color: Color
 }
 
 #Preview {

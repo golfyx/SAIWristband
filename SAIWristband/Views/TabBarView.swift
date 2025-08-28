@@ -9,6 +9,8 @@ import SwiftUI
 
 struct TabBarView: View {
     @State private var selectedTab = 0
+    @EnvironmentObject var appState: AppState
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -37,6 +39,7 @@ struct TabBarView: View {
 // MARK: - 自定义标签栏
 struct CustomTabBar: View {
     @Binding var selectedTab: Int
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack {
@@ -73,14 +76,15 @@ struct CustomTabBar: View {
         }
         .padding(.horizontal, 32)
         .padding(.vertical, 12)
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
         .overlay(
             Rectangle()
-                .fill(Color.gray.opacity(0.3))
+                .fill(AppTheme.separator)
                 .frame(height: 0.5),
             alignment: .top
         )
-        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
+        .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 8, x: 0, y: -2)
+        .glassBackground(RoundedRectangle(cornerRadius: 0), opacity: colorScheme == .dark ? 0.95 : 1.0)
     }
 }
 
@@ -90,17 +94,18 @@ struct TabBarButton: View {
     let icon: String
     let isSelected: Bool
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 16))
-                    .foregroundColor(isSelected ? Color(red: 0.6, green: 0.1, blue: 0.95) : Color.black)
+                    .foregroundColor(isSelected ? AppTheme.accent : AppTheme.primaryText(colorScheme))
                 
                 Text(title)
                     .font(.system(size: 12, weight: .regular))
-                    .foregroundColor(isSelected ? Color(red: 0.6, green: 0.1, blue: 0.95) : Color.black)
+                    .foregroundColor(isSelected ? AppTheme.accent : AppTheme.primaryText(colorScheme))
             }
         }
         .buttonStyle(PlainButtonStyle())
@@ -109,6 +114,7 @@ struct TabBarButton: View {
 
 // MARK: - 占位符视图
 struct HealthView: View {
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         VStack {
             Text("Health")
@@ -116,10 +122,10 @@ struct HealthView: View {
                 .padding()
             Text("健康页面正在开发中...")
                 .font(.body)
-                .foregroundColor(.gray)
+                .foregroundColor(AppTheme.secondaryText(colorScheme))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.white)
+        .background(AppTheme.background(colorScheme))
     }
 }
 

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct VitalSignsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         NavigationView {
@@ -37,7 +38,7 @@ struct VitalSignsView: View {
                     .frame(maxWidth: .infinity)
                 }
             }
-            .background(Color.white)
+            .background(AppTheme.background(colorScheme))
             .navigationBarHidden(true)
         }
     }
@@ -46,6 +47,7 @@ struct VitalSignsView: View {
 // MARK: - 自定义导航栏
 struct CustomVitalSignsNavigationBar: View {
     let onBack: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         HStack {
@@ -53,9 +55,9 @@ struct CustomVitalSignsNavigationBar: View {
             Button(action: onBack) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(Color(red: 0.03, green: 0.03, blue: 0.03))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                     .frame(width: 44, height: 44)
-                    .background(Color.white)
+                    .background(AppTheme.cardBackground(colorScheme))
                     .clipShape(Circle())
                     .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
             }
@@ -66,7 +68,7 @@ struct CustomVitalSignsNavigationBar: View {
             Text("Vital signs")
                 .font(.custom("Montserrat", size: 18))
                 .fontWeight(.regular)
-                .foregroundColor(Color(red: 0.03, green: 0.03, blue: 0.03))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
             Spacer()
             
@@ -77,19 +79,24 @@ struct CustomVitalSignsNavigationBar: View {
         .padding(.horizontal, 20)
         .padding(.top, 12)
         .padding(.bottom, 16)
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
     }
 }
 
 // MARK: - Add Health Data 部分
 struct AddHealthDataSection: View {
+    @State private var showingBloodPressureSync = false
+    @State private var showingBloodGlucose = false
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // 标题
             Text("Add health data")
                 .font(.custom("Roboto Mono", size: 18))
                 .fontWeight(.bold)
-                .foregroundColor(Color(red: 0.18, green: 0.09, blue: 0.22))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
             // 三个按钮
             VStack(spacing: 16) {
@@ -99,16 +106,20 @@ struct AddHealthDataSection: View {
                     backgroundColor: Color(red: 0.62, green: 0.48, blue: 0.72)
                 )
                 
-                NavigationLink(destination: BloodPressureSyncView()) {
+                Button(action: {
+                    showingBloodPressureSync = true
+                }) {
                     HealthDataButton(
                         title: "Blood pressure",
                         icon: "heart.fill",
-                        backgroundColor: Color(red: 0.62, green: 0.48, blue: 0.72)
+                        backgroundColor: Color(red: 0.43, green: 0.24, blue: 0.46)
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
                 
-                NavigationLink(destination: BloodGlucoseView()) {
+                Button(action: {
+                    showingBloodGlucose = true
+                }) {
                     HealthDataButton(
                         title: "Blood sugar",
                         icon: "drop.triangle.fill",
@@ -117,6 +128,12 @@ struct AddHealthDataSection: View {
                 }
                 .buttonStyle(PlainButtonStyle())
             }
+        }
+        .sheet(isPresented: $showingBloodPressureSync) {
+            BloodPressureSyncView()
+        }
+        .sheet(isPresented: $showingBloodGlucose) {
+            BloodGlucoseView()
         }
     }
 }
@@ -155,13 +172,14 @@ struct HealthDataButton: View {
 
 // MARK: - Select Tests to Start 部分
 struct SelectTestsSection: View {
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             // 标题
             Text("Select Tests to Start")
                 .font(.custom("Roboto Mono", size: 18))
                 .fontWeight(.bold)
-                .foregroundColor(Color(red: 0.18, green: 0.09, blue: 0.22))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
             // 四个测试按钮 - 自定义布局
             VStack(spacing: 16) {

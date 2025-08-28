@@ -11,6 +11,7 @@ struct ShareView: View {
     @State private var selectedShareType: ShareType = .healthReport
     @State private var showingShareSheet = false
     @State private var shareText = ""
+    @Environment(\.colorScheme) private var colorScheme
     
     enum ShareType: String, CaseIterable {
         case healthReport = "健康报告"
@@ -121,8 +122,8 @@ struct ShareView: View {
                 .padding(16)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+                        .fill(AppTheme.cardBackground(colorScheme))
+                        .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 5, x: 0, y: 2)
                 )
                 
                 // 分享按钮
@@ -139,7 +140,7 @@ struct ShareView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(Color(red: 0.6, green: 0.1, blue: 0.95))
+                    .background(AppTheme.accent)
                     .cornerRadius(8)
                 }
             }
@@ -419,7 +420,7 @@ struct ShareOptionRow: View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: icon)
-                    .foregroundColor(Color(red: 0.6, green: 0.1, blue: 0.95))
+                    .foregroundColor(AppTheme.accent)
                     .frame(width: 20)
                 
                 VStack(alignment: .leading, spacing: 2) {

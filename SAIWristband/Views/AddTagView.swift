@@ -10,12 +10,52 @@ struct AddTagView: View {
     // 时间选择器显示状态
     @State private var showingTimePicker = false
     
-    // 表情数据
-    private let moodStickers = ["😊", "😢", "😡", "😴", "🤔", "😍", "😎", "🤗", "😌", "😤", "🥺", "😇"]
-    private let foodStickers = ["🍎", "🍕", "🍜", "🍣", "🍰", "☕", "🍺", "🥗", "🍔", "🌮", "🍦", "🍷"]
-    private let sportsStickers = ["🏃", "🏊", "🚴", "🏋️", "⚽", "🏀", "🎾", "🏸", "🏓", "🏈", "🎯", "🧘"]
-    private let weatherStickers = ["☀️", "🌧️", "❄️", "🌪️", "🌈", "🌙", "☁️", "⚡", "🌤️", "🌦️", "🌨️", "🌩️"]
-    private let otherStickers = ["🎵", "📚", "🎮", "💻", "📱", "🎨", "✈️", "🏠", "💡", "🔮", "🎪", "🎭"]
+    // 贴纸资源（使用 Assets 中以 Icon 开头的图片名）
+    private let moodStickers = [
+        "Icon sentiment very satisfied",
+        "Icon sentiment neutral",
+        "Icon mood bad",
+        "Icon sentiment very dissatisfied",
+        "Icon face sad cry",
+        "Icon face sad tear",
+        "Icon face smile wink"
+    ]
+    private let foodStickers = [
+        "Icon ramen dining",
+        "Icon bowl food",
+        "Icon fastfood",
+        "Icon pizza slice",
+        "Icon local cafe",
+        "Icon egg alt (1)",
+        "Icon apple whole",
+    ]
+    private let sportsStickers = [
+        "Icon hiking",
+        "Icon pool",
+        "Icon sports volleyball",
+        "Icon sports basketball",
+        "Icon sports soccer",
+        "Icon sports baseball",
+        "Icon table tennis paddle ball",
+    ]
+    private let weatherStickers = [
+        "Icon brightness 5",
+        "Icon dark mode",
+        "Icon cloud",
+        "Icon cloud showers heavy",
+        "Icon cloud bolt",
+        "Icon ac unit",
+        "Icon storm"
+    ]
+    private let otherStickers = [
+        "Icon cat",
+        "Icon dog",
+        "Icon crow",
+        "Icon cruelty free",
+        "Icon local florist",
+        "Icon tree",
+        "Icon diamond"
+    ]
     
     // 表情对应的标签内容
     private let stickerContent: [String: String] = [
@@ -90,6 +130,8 @@ struct AddTagView: View {
         "🎭": "Drama queen\nTheatrical life"
     ]
     
+    @Environment(\.colorScheme) private var colorScheme
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -109,7 +151,7 @@ struct AddTagView: View {
                     .padding(.top, 20)
                 }
             }
-            .background(Color(.systemBackground))
+            .background(AppTheme.background(colorScheme))
             .navigationBarHidden(true)
         }
         .sheet(isPresented: $showingTimePicker) {
@@ -150,9 +192,10 @@ struct AddTagView: View {
             
             // 分割线
             Divider()
-                .background(Color(.separator))
+                .background(AppTheme.separator)
         }
-        .background(Color(.systemBackground))
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
     }
     
     // MARK: - New Tag 部分
@@ -161,26 +204,26 @@ struct AddTagView: View {
             // 标题
             Text("New Tag")
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
             // 输入区域
             HStack(spacing: 12) {
                 // Type 输入框
                 TextField("Type...", text: $tagType)
                     .font(.system(size: 13, weight: .regular))
-                    .foregroundColor(Color(red: 0.66, green: 0.58, blue: 0.72))
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color(red: 0.66, green: 0.58, blue: 0.72), lineWidth: 0.83)
+                            .stroke(AppTheme.accent.opacity(0.25), lineWidth: 0.83)
                             .shadow(color: Color.black.opacity(0.08), radius: 1, x: 0, y: 1)
                     )
                 
                 // add to 文本
                 Text("add to")
                     .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 // 时间选择器
                 Button(action: {
@@ -189,17 +232,17 @@ struct AddTagView: View {
                     HStack(spacing: 8) {
                         Text(timeString)
                             .font(.system(size: 14, weight: .regular))
-                            .foregroundColor(Color(red: 0.34, green: 0.14, blue: 0.52))
+                            .foregroundColor(AppTheme.accent)
                         
                         Image(systemName: "chevron.down")
                             .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(Color(red: 0.34, green: 0.14, blue: 0.52))
+                            .foregroundColor(AppTheme.accent)
                     }
                     .padding(.horizontal, 12)
                     .padding(.vertical, 10)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color(red: 0.34, green: 0.14, blue: 0.52), lineWidth: 1)
+                            .stroke(AppTheme.accent, lineWidth: 1)
                             .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 0)
                     )
                 }
@@ -213,35 +256,34 @@ struct AddTagView: View {
     // MARK: - 标签预览
     private var tagPreview: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("add to")
-                .font(.system(size: 14, weight: .regular))
-                .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37))
             
             // 标签卡片
             ZStack {
                 // 背景
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(red: 0.99, green: 0.96, blue: 1.0))
+                    .fill(AppTheme.elevatedCardBackground(colorScheme))
                     .shadow(color: Color.black.opacity(0.25), radius: 2, x: -2, y: 2)
                 
                 // 内容
                 VStack(spacing: 8) {
-                    Text(tagType.isEmpty ? "Please enter tag content" : tagType)
+                    Text(tagType.isEmpty ? "Type..." : tagType)
                         .font(.system(size: 24, weight: .regular))
-                        .foregroundColor(tagType.isEmpty ? Color.secondary : Color(red: 0.48, green: 0.08, blue: 0.49))
+                        .foregroundColor(tagType.isEmpty ? Color.secondary : AppTheme.accent)
                         .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
                 
-                // 表情显示在右下角
+                // 贴纸显示在右下角
                 if !selectedSticker.isEmpty {
                     VStack {
                         Spacer()
                         HStack {
                             Spacer()
-                            Text(selectedSticker)
-                                .font(.system(size: 42))
+                            Image(selectedSticker)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 42, height: 42)
                                 .padding(.trailing, 10)
                                 .padding(.bottom, 1)
                         }
@@ -257,7 +299,7 @@ struct AddTagView: View {
             // 标题
             Text("Stickers")
                 .font(.system(size: 18, weight: .bold))
-                .foregroundColor(Color(red: 0.52, green: 0.17, blue: 0.61))
+                .foregroundColor(AppTheme.accent)
             
             // 分类表情选择器
             categoryStickerRows
@@ -279,34 +321,23 @@ struct AddTagView: View {
             // 分类标题
             Text(category.displayName)
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(Color(red: 0.34, green: 0.18, blue: 0.37))
+                .foregroundColor(AppTheme.primaryText(colorScheme))
             
-            // 表情水平滚动
+            // 单行横向滚动贴纸列表（不换行）
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
+                HStack(spacing: 15) {
                     ForEach(stickersForCategory(category), id: \.self) { sticker in
                         Button(action: {
                             selectedSticker = sticker
                         }) {
-                            Text(sticker)
-                                .font(.system(size: 30))
-                                .frame(width: 40, height: 40)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(selectedSticker == sticker ? 
-                                              Color(red: 0.52, green: 0.17, blue: 0.61).opacity(0.2) : 
-                                              Color.clear)
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .stroke(selectedSticker == sticker ? 
-                                                       Color(red: 0.52, green: 0.17, blue: 0.61) : 
-                                                       Color.clear, lineWidth: 2)
-                                        )
-                                )
+                            Image(sticker)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 30, height: 30)
                         }
                     }
                 }
-                .padding(.horizontal, 4)
+                .padding(.vertical, 4)
             }
         }
     }

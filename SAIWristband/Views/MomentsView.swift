@@ -11,6 +11,7 @@ struct MomentsView: View {
         case weight = "Weight"
     }
     
+    @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         VStack(spacing: 0) {
             // 自定义导航栏
@@ -29,9 +30,10 @@ struct MomentsView: View {
                     badgeSection
                 }
                 .padding(.bottom, 24)
+                .padding(.top, 12)
             }
         }
-        .background(Color.white)
+        .background(AppTheme.background(colorScheme))
         .navigationBarHidden(true)
         .onAppear {
             // 隐藏底部TabBar
@@ -48,7 +50,7 @@ struct MomentsView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Ranking list")
                 .font(.system(size: 24, weight: .bold))
-                .foregroundColor(Color(hex: "5B009D"))
+                .foregroundColor(AppTheme.primary7Text(colorScheme))
             
             HStack(spacing: 8) {
                 // Steps 排名卡片
@@ -58,8 +60,7 @@ struct MomentsView: View {
                         RankingItem(name: "Alice", value: "3,839 steps", rank: 1),
                         RankingItem(name: "Lisa", value: "2,389 steps", rank: 2),
                         RankingItem(name: "Peter", value: "2,139 steps", rank: 3)
-                    ],
-                    backgroundColor: Color(hex: "E3CEF2")
+                    ]
                 )
                 
                 // Mileages 排名卡片
@@ -70,7 +71,7 @@ struct MomentsView: View {
                         RankingItem(name: "Lisa", value: "8.29 km", rank: 2),
                         RankingItem(name: "Peter", value: "7.35 km", rank: 3)
                     ],
-                    backgroundColor: Color(hex: "A081D9")
+                    mid: true
                 )
                 
                 // Badges 排名卡片
@@ -80,33 +81,35 @@ struct MomentsView: View {
                         RankingItem(name: "Alice", value: "10 badges", rank: 1),
                         RankingItem(name: "Lisa", value: "6 badges", rank: 2),
                         RankingItem(name: "Peter", value: "5 badges", rank: 3)
-                    ],
-                    backgroundColor: Color(hex: "4FE7YB")
+                    ]
                 )
             }
         }
     }
     
-    private func rankingCard(title: String, rankings: [RankingItem], backgroundColor: Color) -> some View {
+    private func rankingCard(title: String, rankings: [RankingItem], mid: Bool = false) -> some View {
         VStack(spacing: 8) {
             // 给title添加背景
             Text(title)
                 .font(.system(size: 14, weight: .regular))
-                .foregroundColor(Color(hex: "701E9B"))
+                .foregroundColor(AppTheme.accent)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 4)
-                .background(Color.white.opacity(0.8))
+                .background(AppTheme.cardBackground(colorScheme).opacity(0.8))
                 .cornerRadius(8)
             
             VStack(spacing: 12) {
                 ForEach(rankings.indices, id: \.self) { index in
                     let item = rankings[index]
-                    HStack(spacing: 8) {
+                    HStack(spacing: 5) {
                         // 头像
                         ZStack {
-                            Circle()
-                                .fill(Color(hex: "701E9B"))
-                                .frame(width: 30, height: 30)
+                            // 根据排名显示不同的头像图片
+                            Image(rankImage(for: item.rank))
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 24, height: 24)
+                                .clipShape(Circle())
                             
                             // 皇冠
                             Image(systemName: crownIcon(for: item.rank))
@@ -118,25 +121,23 @@ struct MomentsView: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(item.name)
                                 .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(Color(hex: "701E9B"))
+                                .foregroundColor(colorScheme == .dark ? Color.white : (mid ? Color.white : AppTheme.primary4))
                                 .lineLimit(1)
                             
                             Text(item.value)
                                 .font(.system(size: 9, weight: .regular))
-                                .foregroundColor(Color(hex: "440076"))
+                                .foregroundColor(colorScheme == .dark ? Color.white : (mid ? Color.white : AppTheme.primary5))
                                 .lineLimit(1)
                         }
-                        
-                        Spacer()
                     }
                 }
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
         }
-        .background(backgroundColor)
+        .background(mid ? AppTheme.elevatedCard1Background(colorScheme) : AppTheme.elevatedCard2Background(colorScheme))
         .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.08), radius: 0, x: 0, y: 0)
+        .shadow(color: .black.opacity(AppTheme.shadowOpacity(colorScheme)), radius: 8, x: 0, y: 2)
     }
     
     // MARK: - Badge Section
@@ -144,7 +145,7 @@ struct MomentsView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Badge")
                 .font(.system(size: 24, weight: .bold))
-                .foregroundColor(Color(hex: "5B009D"))
+                .foregroundColor(AppTheme.primary7)
                 .padding(.horizontal, 16)
             
             // Tab 选择器
@@ -154,11 +155,11 @@ struct MomentsView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(selectedTab.rawValue)
                     .font(.system(size: 20, weight: .regular))
-                    .foregroundColor(Color(hex: "5B009D"))
+                    .foregroundColor(AppTheme.primary7)
                 
                 Text("Unlocked \(unlockedCount(for: selectedTab))/15")
                     .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(Color(hex: "5B009D"))
+                    .foregroundColor(AppTheme.primary7)
             }
             .padding(.horizontal, 16)
             
@@ -180,14 +181,14 @@ struct MomentsView: View {
                 }) {
                     Text(tab.rawValue)
                         .font(.system(size: selectedTab == tab ? 12 : 14, weight: selectedTab == tab ? .bold : .bold))
-                        .foregroundColor(selectedTab == tab ? Color.white : Color(hex: "701E9B"))
+                        .foregroundColor(selectedTab == tab ? Color.white : AppTheme.primary4)
                         .padding(.horizontal, selectedTab == tab ? 20 : 16)
                         .padding(.vertical, 8)
                         .background(
                             Group {
                                 if selectedTab == tab {
                                     RoundedRectangle(cornerRadius: 20)
-                                        .fill(Color(hex: "701EA6"))
+                                        .fill(AppTheme.primary9)
                                 } else {
                                     Color.clear
                                 }
@@ -197,7 +198,7 @@ struct MomentsView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .background(Color(hex: "EDE6F2"))
+        .background(AppTheme.card3Background(colorScheme))
     }
     
     private func badgeCard(_ badge: BadgeItem) -> some View {
@@ -215,13 +216,13 @@ struct MomentsView: View {
                     // 城市名称
                     Text(badge.cityName)
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(Color(hex: "701E9B"))
+                        .foregroundColor(colorScheme == .dark ? .white : AppTheme.primary4)
                         .multilineTextAlignment(.center)
                     
                     // 距离数值
                     Text(badge.distance)
                         .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(Color(hex: "701E9B"))
+                        .foregroundColor(colorScheme == .dark ? .white : AppTheme.primary4)
                 }
                 
                 // 未解锁时的遮挡层和锁图标
@@ -247,13 +248,22 @@ struct MomentsView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 167)
-            .background(Color(hex: "F8F5FF")) // 浅紫色背景
+            .background(AppTheme.card3Background(colorScheme))
             .cornerRadius(12)
             .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
     }
     
     // MARK: - Helper Functions
+    private func rankImage(for rank: Int) -> String {
+        switch rank {
+        case 1: return "Image36" // 冠军图片
+        case 2: return "Image37" // 亚军图片
+        case 3: return "Image38" // 季军图片
+        default: return "Image38" // 默认使用季军图片
+        }
+    }
+    
     private func crownIcon(for rank: Int) -> String {
         switch rank {
         case 1: return "crown.fill"
@@ -274,10 +284,10 @@ struct MomentsView: View {
     
     private func crownColor(for rank: Int) -> Color {
         switch rank {
-        case 1: return Color(hex: "FFDB00") // 金色
-        case 2: return Color(hex: "B7BAE4") // 银色
-        case 3: return Color(hex: "DBAF52") // 铜色
-        default: return Color(hex: "B7BAE4")
+        case 1: return Color.yellow // 金色
+        case 2: return Color.gray // 银色
+        case 3: return Color.orange // 铜色
+        default: return Color.gray
         }
     }
     
@@ -354,6 +364,7 @@ struct BadgeItem {
 struct MomentsNavigationBar: View {
     let title: String
     let onBack: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
@@ -363,14 +374,14 @@ struct MomentsNavigationBar: View {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 16, weight: .medium))
                     }
-                    .foregroundColor(Color(hex: "AE8EB7"))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 }
                 
                 Spacer()
                 
                 Text(title)
                     .font(.system(size: 18, weight: .regular))
-                    .foregroundColor(Color(hex: "5B009D"))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
                 
                 Spacer()
                 
@@ -390,7 +401,8 @@ struct MomentsNavigationBar: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(height: 0.5)
         }
-        .background(Color.white)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 2)
     }
 }
