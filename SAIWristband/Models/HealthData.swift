@@ -143,7 +143,7 @@ extension HealthSummary {
             value: "90",
             unit: "BPM",
             status: .normal,
-            time: "10:28",
+            time: "6:05",
             icon: "Icon heart pulse",
             chartImage: nil
         )

@@ -318,6 +318,9 @@ struct HealthSummaryCard: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var showingBloodPressureSync = false
     @State private var showingBloodGlucose = false
+    @State private var showingECGHistory = false
+    @State private var showingHeartRhythmHistory = false
+    @State private var showingBloodOxygenHistory = false
     
     // 计算属性：根据数据类型获取对应的图片名称
     private var imageName: String {
@@ -405,10 +408,16 @@ struct HealthSummaryCard: View {
         .onTapGesture {
             // 根据数据类型决定跳转到哪个视图
             switch data.type {
+            case .heartRate:
+                showingHeartRhythmHistory = true
             case .bloodPressure:
                 showingBloodPressureSync = true
             case .bloodSugar:
                 showingBloodGlucose = true
+            case .bloodOxygen:
+                showingBloodOxygenHistory = true
+            case .ecg:
+                showingECGHistory = true
             default:
                 break
             }
@@ -418,6 +427,15 @@ struct HealthSummaryCard: View {
         }
         .sheet(isPresented: $showingBloodGlucose) {
             BloodGlucoseView()
+        }
+        .sheet(isPresented: $showingECGHistory) {
+            ECGHistoryView()
+        }
+        .sheet(isPresented: $showingHeartRhythmHistory) {
+            HeartRhythmHistoryView()
+        }
+        .sheet(isPresented: $showingBloodOxygenHistory) {
+            BloodOxygenHistoryView()
         }
     }
 }
