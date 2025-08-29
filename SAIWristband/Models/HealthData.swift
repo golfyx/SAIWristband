@@ -21,6 +21,7 @@ struct HealthSummary {
 
 enum HealthType: String, CaseIterable {
     case heartRate = "Heart rhythm"
+    case ecg = "Electrocardiogram"
     case bloodPressure = "Blood pressure"
     case bloodSugar = "Blood glucose"
     case bloodOxygen = "Blood oxygen"
@@ -28,6 +29,8 @@ enum HealthType: String, CaseIterable {
     var iconName: String {
         switch self {
         case .heartRate:
+            return "heart.fill"
+        case .ecg:
             return "heart.fill"
         case .bloodPressure:
             return "drop.fill"
@@ -41,6 +44,8 @@ enum HealthType: String, CaseIterable {
     var color: Color {
         switch self {
         case .heartRate:
+            return Color.red
+        case .ecg:
             return Color.red
         case .bloodPressure:
             return Color.blue
@@ -103,7 +108,7 @@ extension HealthSummary {
             unit: "bpm",
             status: .normal,
             time: "10:28",
-            icon: "Icon heart pulse",
+            icon: "Icon heart",
             chartImage: "chart_1"
         ),
         HealthSummary(
@@ -131,6 +136,15 @@ extension HealthSummary {
             status: .normal,
             time: "10:28",
             icon: "Icon lungs",
+            chartImage: nil
+        ),
+        HealthSummary(
+            type: .ecg,
+            value: "90",
+            unit: "BPM",
+            status: .normal,
+            time: "10:28",
+            icon: "Icon heart pulse",
             chartImage: nil
         )
     ]

@@ -330,6 +330,8 @@ struct HealthSummaryCard: View {
             return "Image6"      // 第三行
         case .bloodOxygen:
             return "Image7"      // 第四行
+        case .ecg:
+            return "Image27"      // 第四行
         }
     }
     
@@ -525,7 +527,7 @@ struct TestValue {
             case .heartRate:
                 return "Icon heart circle bolt"
             case .bloodPressure:
-                return "Icon heart pulse"
+                return "Icon heart"
             case .bloodSugar:
                 return "Icon bloodtype"
             case .temperature:
