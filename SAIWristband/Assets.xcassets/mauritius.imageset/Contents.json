@@ -2,17 +2,17 @@
   "images" : [
     {
       "filename" : "mauritius.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "1x"
     },
     {
       "filename" : "mauritius.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "2x"
     },
     {
       "filename" : "mauritius.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "3x"
     }
   ],

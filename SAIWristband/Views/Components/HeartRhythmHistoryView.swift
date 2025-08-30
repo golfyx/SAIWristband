@@ -140,7 +140,7 @@ struct HeartRhythmHistoryView: View {
                     
                     Text(rangeText)
                         .font(.custom("Roboto", size: 40))
-                        .foregroundColor(AppTheme.accent)
+                        .foregroundColor(colorScheme == .dark ? .white : .black)
                     
                     Text(timeRangeText)
                         .font(.custom("Roboto", size: 14))
@@ -175,7 +175,7 @@ struct HeartRhythmHistoryView: View {
                 
                 Text("90 BPM")
                     .font(.custom("Roboto", size: 14))
-                    .foregroundColor(AppTheme.accent)
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
             }
             .frame(height: 40)
             .padding(.horizontal, 20)
@@ -203,7 +203,7 @@ struct HeartRhythmHistoryView: View {
             HStack(spacing: 13.5) {
                 Text("Show more heart rate data")
                     .font(.custom("Montserrat", size: 14))
-                    .foregroundColor(AppTheme.accent)
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
             }
             .frame(width: 214, height: 32)
             .background(AppTheme.secondaryBackground(colorScheme))

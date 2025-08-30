@@ -2,17 +2,17 @@
   "images" : [
     {
       "filename" : "tokyo.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "1x"
     },
     {
       "filename" : "tokyo.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "2x"
     },
     {
       "filename" : "tokyo.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "3x"
     }
   ],

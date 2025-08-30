@@ -12,6 +12,9 @@ struct BloodGlucoseView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     
+    // NFC扫描器
+    @StateObject private var nfcScanner = NFCScanner()
+    
     // 模拟血糖数据 - 按照设计稿精确数值
     @State private var glucoseData: [GlucoseDataPoint] = [
         GlucoseDataPoint(time: "00:00", value: 6.5),
@@ -24,8 +27,9 @@ struct BloodGlucoseView: View {
         GlucoseDataPoint(time: "21:00", value: 6.1)
     ]
     
-    // 扫描弹框状态
-    @State private var showingScanSheet = false
+    // Measurement result sheet state
+    @State private var showingResultSheet = false
+    @State private var nfcScanCompleted = false
     
     var body: some View {
         NavigationView {
@@ -46,9 +50,10 @@ struct BloodGlucoseView: View {
                         Last24HoursSection(glucoseData: glucoseData)
                             .padding(.horizontal, 20)
                         
-                        // 扫描按钮
+                        // Measurement Button
                         ScanButtonSection {
-                            showingScanSheet = true
+                            // Directly start NFC scanning
+                            nfcScanner.startScanning()
                         }
                         
                         // 完成度
@@ -58,12 +63,27 @@ struct BloodGlucoseView: View {
                     .frame(maxWidth: .infinity)
                 }
             }
-//            .background(AppTheme.background(colorScheme))
             .navigationBarHidden(true)
-            .sheet(isPresented: $showingScanSheet) {
-                ScanSheetView()
-                    .presentationDetents([.height(450)])
+            .sheet(isPresented: $showingResultSheet) {
+                MeasurementResultView(glucoseReading: nfcScanner.glucoseReading)
+                    .presentationDetents([.height(400)])
                     .presentationDragIndicator(.visible)
+            }
+            .onChange(of: showingResultSheet) { isPresented in
+                if !isPresented {
+                    // Reset state after result sheet is closed for next measurement
+                    nfcScanCompleted = false
+                    nfcScanner.resetScanState()
+                }
+            }
+            .onReceive(nfcScanner.$glucoseReading) { reading in
+                if reading != nil && !nfcScanCompleted {
+                    nfcScanCompleted = true
+                    // Wait for system NFC sheet to hide before showing result sheet
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                        showingResultSheet = true
+                    }
+                }
             }
         }
     }
@@ -361,7 +381,7 @@ struct GlucoseChartView: View {
     }
 }
 
-// MARK: - 扫描按钮部分
+// MARK: - Measurement Button Section
 struct ScanButtonSection: View {
     let action: () -> Void
     
@@ -370,14 +390,14 @@ struct ScanButtonSection: View {
             HStack(spacing: 8) {
                 Spacer()
                 
-                // 左侧图标
+                // Left icon
                 Image(systemName: "qrcode.viewfinder")
                     .font(.system(size: 21, weight: .medium))
                     .foregroundColor(.white)
                     .frame(width: 21, height: 21)
                 
-                // 右侧文字
-                Text("Scan")
+                // Right text
+                Text("Measure")
                     .font(.custom("Montserrat", size: 14))
                     .fontWeight(.bold)
                     .foregroundColor(.white)
@@ -393,8 +413,6 @@ struct ScanButtonSection: View {
         .buttonStyle(PlainButtonStyle())
     }
 }
-
-
 
 // MARK: - 完成度部分
 struct CompletionSection: View {
@@ -455,113 +473,111 @@ struct GlucoseDataPoint: Identifiable {
     let value: Double
 }
 
-// MARK: - 扫描弹框视图
-struct ScanSheetView: View {
+// MARK: - Measurement Result Sheet View
+struct MeasurementResultView: View {
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var nfcScanner = NFCScanner()
-    @State private var scannedDeviceData: GlucoseDeviceData?
+    @Environment(\.colorScheme) private var colorScheme
+    let glucoseReading: LibreGlucoseReading?
     
     var body: some View {
         VStack(spacing: 0) {
-            // 弹框内容
+            // Sheet content
             VStack(spacing: 20) {
-                // 标题
-                Text("Ready to scan")
-                    .font(.system(size: 24, weight: .regular))
+                // Title
+                Text("Measurement Complete")
+                    .font(.system(size: 24, weight: .bold))
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .padding(.top, 20)
                 
-                // 描述文字
-                Text("Hold the top of the iPhone near the device")
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 20)
-                
-                // 扫描图片区域
-                ZStack {
-                    // 背景圆形
-                    Circle()
-                        .fill(Color.white.opacity(0.1))
-                        .frame(width: 185, height: 185)
-                    
-                    if nfcScanner.isScanning {
-                        // 扫描动画
-                        VStack(spacing: 16) {
-                            ProgressView()
-                                .scaleEffect(1.5)
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                // Glucose result display
+                if let reading = glucoseReading {
+                    VStack(spacing: 16) {
+                        // Main glucose value
+                        VStack(spacing: 8) {
+                            Text("Current Glucose")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
                             
-                            Text("Scanning...")
+                            HStack(spacing: 8) {
+                                Text("\(String(format: "%.1f", reading.currentGlucose ?? 0))")
+                                    .font(.system(size: 36, weight: .bold))
+                                    .foregroundColor(AppTheme.primaryText(colorScheme))
+                                
+                                Text("mmol/L")
+                                    .font(.system(size: 18, weight: .medium))
+                                    .foregroundColor(AppTheme.primaryText(colorScheme))
+                                
+                                Text(reading.trendDirection.rawValue)
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        
+                        // Detailed information
+                        HStack(spacing: 30) {
+                            VStack(spacing: 4) {
+                                Text("Sensor Status")
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(.white.opacity(0.8))
+                                Text("Normal")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            if let batteryLevel = reading.batteryLevel {
+                                VStack(spacing: 4) {
+                                    Text("Battery Level")
+                                        .font(.system(size: 12, weight: .regular))
+                                        .foregroundColor(.white.opacity(0.8))
+                                    Text("\(batteryLevel)%")
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                        }
+                        
+                        // History record information
+                        VStack(spacing: 8) {
+                            Text("History Records")
                                 .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                            Text("\(reading.glucoseHistory.count) data points")
+                                .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(.white)
                         }
-                    } else if scannedDeviceData != nil {
-                        // 扫描成功图标
-                        VStack(spacing: 12) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 60, weight: .light))
-                                .foregroundColor(.green)
-                            
-                            Text("Scan Successful")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.green)
-                        }
-                    } else {
-                        // 扫描图标
-                        Image(systemName: "iphone.radiowaves.left.and.right")
-                            .font(.system(size: 80, weight: .light))
-                            .foregroundColor(.white)
+                        .padding(.top, 10)
                     }
-                }
-                .padding(.top, 10)
-                
-                // 扫描状态和结果显示
-                if !nfcScanner.scanError.isEmpty {
-                    Text(nfcScanner.scanError)
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.red)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 20)
-                }
-                
-                if let deviceData = scannedDeviceData {
-                    VStack(spacing: 8) {
-                        Text("Device ID: \(deviceData.deviceId)")
-                            .font(.system(size: 14, weight: .medium))
+                    .padding(.horizontal, 20)
+                } else {
+                    // If no data, show default information
+                    VStack(spacing: 16) {
+                        Text("Measurement Data")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                        
+                        Text("6.5 mmol/L")
+                            .font(.system(size: 36, weight: .bold))
+                            .foregroundColor(AppTheme.primaryText(colorScheme))
+                        
+                        Text("Stable")
+                            .font(.system(size: 18, weight: .medium))
                             .foregroundColor(.white)
-                        
-                        if let glucoseValue = deviceData.glucoseValue {
-                            Text("Glucose: \(String(format: "%.1f", glucoseValue)) mmol/L")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.green)
-                        }
-                        
-                        if let batteryLevel = deviceData.batteryLevel {
-                            Text("Battery: \(batteryLevel)%")
-                                .font(.system(size: 12, weight: .regular))
-                                .foregroundColor(.white.opacity(0.8))
-                        }
                     }
                     .padding(.horizontal, 20)
                 }
                 
                 Spacer(minLength: 20)
                 
-                // 取消按钮
+                // Done button
                 Button(action: {
-                    nfcScanner.stopScanning()
                     dismiss()
                 }) {
-                    Text(scannedDeviceData != nil ? "Done" : "Cancel")
-                        .font(.system(size: 24, weight: .bold))
+                    Text("Done")
+                        .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 45)
-                        .background(Color(red: 0.32, green: 0.32, blue: 0.32))
-                        .cornerRadius(8)
-                        .shadow(color: Color.black.opacity(0.16), radius: 8, x: 0, y: 2)
+                        .frame(height: 50)
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
@@ -591,20 +607,6 @@ struct ScanSheetView: View {
             )
             .stroke(Color.white.opacity(0.1), lineWidth: 1)
         )
-        .onAppear {
-            // 弹框一打开就开始扫描
-            nfcScanner.startScanning()
-        }
-        .onReceive(nfcScanner.$scannedData) { data in
-            if !data.isEmpty {
-                scannedDeviceData = nfcScanner.parseGlucoseData(data)
-            }
-        }
-        .onReceive(nfcScanner.$scanError) { error in
-            if !error.isEmpty && error != "Scan successful" {
-                // 显示错误信息
-            }
-        }
     }
 }
 

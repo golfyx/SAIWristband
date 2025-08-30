@@ -7,55 +7,55 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		465DBFB3ED4F3550AF66E692 /* Pods_SAIWristband_SAIWristbandUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 723B72D1EC6CA77FD6E45013 /* Pods_SAIWristband_SAIWristbandUITests.framework */; };
-		5F9807EF99C7735EE632D90C /* Pods_SAIWristbandTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D6EBFD9C369BB527B0CEE77E /* Pods_SAIWristbandTests.framework */; };
-		F1233B394A1D56F717FD89CB /* Pods_SAIWristband.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 373584AD47D07E6F002748B6 /* Pods_SAIWristband.framework */; };
+		0295533F4D2909176CE68525 /* Pods_SAIWristband_SAIWristbandUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E01ECA485CE38DB0756CEF1 /* Pods_SAIWristband_SAIWristbandUITests.framework */; };
+		BF87DF948DB9162A2C2C5DEC /* Pods_SAIWristbandTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE9ABB58833016852A88AAEC /* Pods_SAIWristbandTests.framework */; };
+		E5B9902DE220150F5FE5BC6B /* Pods_SAIWristband.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7187D0524440E366AE6DCAD /* Pods_SAIWristband.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		E87F91082E57F90800E5467A /* PBXContainerItemProxy */ = {
+		E87FA9E72E6339BE00F92118 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E87F90F22E57F90200E5467A /* Project object */;
+			containerPortal = E87FA9D12E6339B800F92118 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = E87F90F92E57F90200E5467A;
+			remoteGlobalIDString = E87FA9D82E6339B800F92118;
 			remoteInfo = SAIWristband;
 		};
-		E87F91122E57F90800E5467A /* PBXContainerItemProxy */ = {
+		E87FA9F12E6339BE00F92118 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = E87F90F22E57F90200E5467A /* Project object */;
+			containerPortal = E87FA9D12E6339B800F92118 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = E87F90F92E57F90200E5467A;
+			remoteGlobalIDString = E87FA9D82E6339B800F92118;
 			remoteInfo = SAIWristband;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		18E151CBCAF5ECA98409A5FE /* Pods-SAIWristband.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristband.debug.xcconfig"; path = "Target Support Files/Pods-SAIWristband/Pods-SAIWristband.debug.xcconfig"; sourceTree = "<group>"; };
-		2D9FB6C1F09DD91D0B749A70 /* Pods-SAIWristband.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristband.release.xcconfig"; path = "Target Support Files/Pods-SAIWristband/Pods-SAIWristband.release.xcconfig"; sourceTree = "<group>"; };
-		373584AD47D07E6F002748B6 /* Pods_SAIWristband.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SAIWristband.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4564DAC07F88B6A4DFD1045F /* Pods-SAIWristband-SAIWristbandUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristband-SAIWristbandUITests.release.xcconfig"; path = "Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests.release.xcconfig"; sourceTree = "<group>"; };
-		5B6505A7EF69FC2B0E875798 /* Pods-SAIWristbandTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristbandTests.release.xcconfig"; path = "Target Support Files/Pods-SAIWristbandTests/Pods-SAIWristbandTests.release.xcconfig"; sourceTree = "<group>"; };
-		723B72D1EC6CA77FD6E45013 /* Pods_SAIWristband_SAIWristbandUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SAIWristband_SAIWristbandUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9619B29FF08C596093A61741 /* Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig"; path = "Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		9E8D0AE98D4F2C395BB35E87 /* Pods-SAIWristbandTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristbandTests.debug.xcconfig"; path = "Target Support Files/Pods-SAIWristbandTests/Pods-SAIWristbandTests.debug.xcconfig"; sourceTree = "<group>"; };
-		D6EBFD9C369BB527B0CEE77E /* Pods_SAIWristbandTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SAIWristbandTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E87F90FA2E57F90200E5467A /* SAIWristband.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SAIWristband.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		E87F91072E57F90800E5467A /* SAIWristbandTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SAIWristbandTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		E87F91112E57F90800E5467A /* SAIWristbandUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SAIWristbandUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		14326FE27381F2BEA70CA492 /* Pods-SAIWristband.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristband.debug.xcconfig"; path = "Target Support Files/Pods-SAIWristband/Pods-SAIWristband.debug.xcconfig"; sourceTree = "<group>"; };
+		2ACF61F286E4BCBAFD159FD3 /* Pods-SAIWristband.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristband.release.xcconfig"; path = "Target Support Files/Pods-SAIWristband/Pods-SAIWristband.release.xcconfig"; sourceTree = "<group>"; };
+		3E01ECA485CE38DB0756CEF1 /* Pods_SAIWristband_SAIWristbandUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SAIWristband_SAIWristbandUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D761030402768185195C9B9 /* Pods-SAIWristband-SAIWristbandUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristband-SAIWristbandUITests.release.xcconfig"; path = "Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests.release.xcconfig"; sourceTree = "<group>"; };
+		716DB4A01B6F20F6BD65974C /* Pods-SAIWristbandTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristbandTests.debug.xcconfig"; path = "Target Support Files/Pods-SAIWristbandTests/Pods-SAIWristbandTests.debug.xcconfig"; sourceTree = "<group>"; };
+		B9B96B958B702033D0863F6B /* Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig"; path = "Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		BE9ABB58833016852A88AAEC /* Pods_SAIWristbandTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SAIWristbandTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		DAD26F5507A72EB548158C9D /* Pods-SAIWristbandTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SAIWristbandTests.release.xcconfig"; path = "Target Support Files/Pods-SAIWristbandTests/Pods-SAIWristbandTests.release.xcconfig"; sourceTree = "<group>"; };
+		E7187D0524440E366AE6DCAD /* Pods_SAIWristband.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SAIWristband.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E87FA9D92E6339B800F92118 /* SAIWristband.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SAIWristband.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E87FA9E62E6339BE00F92118 /* SAIWristbandTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SAIWristbandTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E87FA9F02E6339BE00F92118 /* SAIWristbandUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SAIWristbandUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E87F90FC2E57F90200E5467A /* SAIWristband */ = {
+		E87FA9DB2E6339B800F92118 /* SAIWristband */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SAIWristband;
 			sourceTree = "<group>";
 		};
-		E87F910A2E57F90800E5467A /* SAIWristbandTests */ = {
+		E87FA9E92E6339BE00F92118 /* SAIWristbandTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SAIWristbandTests;
 			sourceTree = "<group>";
 		};
-		E87F91142E57F90800E5467A /* SAIWristbandUITests */ = {
+		E87FA9F32E6339BE00F92118 /* SAIWristbandUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SAIWristbandUITests;
 			sourceTree = "<group>";
@@ -63,208 +63,208 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E87F90F72E57F90200E5467A /* Frameworks */ = {
+		E87FA9D62E6339B800F92118 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1233B394A1D56F717FD89CB /* Pods_SAIWristband.framework in Frameworks */,
+				E5B9902DE220150F5FE5BC6B /* Pods_SAIWristband.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E87F91042E57F90800E5467A /* Frameworks */ = {
+		E87FA9E32E6339BE00F92118 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F9807EF99C7735EE632D90C /* Pods_SAIWristbandTests.framework in Frameworks */,
+				BF87DF948DB9162A2C2C5DEC /* Pods_SAIWristbandTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E87F910E2E57F90800E5467A /* Frameworks */ = {
+		E87FA9ED2E6339BE00F92118 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				465DBFB3ED4F3550AF66E692 /* Pods_SAIWristband_SAIWristbandUITests.framework in Frameworks */,
+				0295533F4D2909176CE68525 /* Pods_SAIWristband_SAIWristbandUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		03B3B923EEA6167633877786 /* Frameworks */ = {
+		3FF1C0CDEAB85BA7F039D2D6 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				373584AD47D07E6F002748B6 /* Pods_SAIWristband.framework */,
-				723B72D1EC6CA77FD6E45013 /* Pods_SAIWristband_SAIWristbandUITests.framework */,
-				D6EBFD9C369BB527B0CEE77E /* Pods_SAIWristbandTests.framework */,
+				14326FE27381F2BEA70CA492 /* Pods-SAIWristband.debug.xcconfig */,
+				2ACF61F286E4BCBAFD159FD3 /* Pods-SAIWristband.release.xcconfig */,
+				B9B96B958B702033D0863F6B /* Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig */,
+				5D761030402768185195C9B9 /* Pods-SAIWristband-SAIWristbandUITests.release.xcconfig */,
+				716DB4A01B6F20F6BD65974C /* Pods-SAIWristbandTests.debug.xcconfig */,
+				DAD26F5507A72EB548158C9D /* Pods-SAIWristbandTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		B940BE202A4D3D1FA79E6279 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E7187D0524440E366AE6DCAD /* Pods_SAIWristband.framework */,
+				3E01ECA485CE38DB0756CEF1 /* Pods_SAIWristband_SAIWristbandUITests.framework */,
+				BE9ABB58833016852A88AAEC /* Pods_SAIWristbandTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		E87F90F12E57F90200E5467A = {
+		E87FA9D02E6339B800F92118 = {
 			isa = PBXGroup;
 			children = (
-				E87F90FC2E57F90200E5467A /* SAIWristband */,
-				E87F910A2E57F90800E5467A /* SAIWristbandTests */,
-				E87F91142E57F90800E5467A /* SAIWristbandUITests */,
-				E87F90FB2E57F90200E5467A /* Products */,
-				FF0D55AA908AFF0E6D2D1266 /* Pods */,
-				03B3B923EEA6167633877786 /* Frameworks */,
+				E87FA9DB2E6339B800F92118 /* SAIWristband */,
+				E87FA9E92E6339BE00F92118 /* SAIWristbandTests */,
+				E87FA9F32E6339BE00F92118 /* SAIWristbandUITests */,
+				E87FA9DA2E6339B800F92118 /* Products */,
+				3FF1C0CDEAB85BA7F039D2D6 /* Pods */,
+				B940BE202A4D3D1FA79E6279 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		E87F90FB2E57F90200E5467A /* Products */ = {
+		E87FA9DA2E6339B800F92118 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E87F90FA2E57F90200E5467A /* SAIWristband.app */,
-				E87F91072E57F90800E5467A /* SAIWristbandTests.xctest */,
-				E87F91112E57F90800E5467A /* SAIWristbandUITests.xctest */,
+				E87FA9D92E6339B800F92118 /* SAIWristband.app */,
+				E87FA9E62E6339BE00F92118 /* SAIWristbandTests.xctest */,
+				E87FA9F02E6339BE00F92118 /* SAIWristbandUITests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		FF0D55AA908AFF0E6D2D1266 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				18E151CBCAF5ECA98409A5FE /* Pods-SAIWristband.debug.xcconfig */,
-				2D9FB6C1F09DD91D0B749A70 /* Pods-SAIWristband.release.xcconfig */,
-				9619B29FF08C596093A61741 /* Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig */,
-				4564DAC07F88B6A4DFD1045F /* Pods-SAIWristband-SAIWristbandUITests.release.xcconfig */,
-				9E8D0AE98D4F2C395BB35E87 /* Pods-SAIWristbandTests.debug.xcconfig */,
-				5B6505A7EF69FC2B0E875798 /* Pods-SAIWristbandTests.release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E87F90F92E57F90200E5467A /* SAIWristband */ = {
+		E87FA9D82E6339B800F92118 /* SAIWristband */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E87F911B2E57F90800E5467A /* Build configuration list for PBXNativeTarget "SAIWristband" */;
+			buildConfigurationList = E87FA9FA2E6339BE00F92118 /* Build configuration list for PBXNativeTarget "SAIWristband" */;
 			buildPhases = (
-				8BBA500548354D914802EFDB /* [CP] Check Pods Manifest.lock */,
-				E87F90F62E57F90200E5467A /* Sources */,
-				E87F90F72E57F90200E5467A /* Frameworks */,
-				E87F90F82E57F90200E5467A /* Resources */,
-				F7A57A1A34017BF215E1A95B /* [CP] Embed Pods Frameworks */,
+				1E4C217B072790F2B470C771 /* [CP] Check Pods Manifest.lock */,
+				E87FA9D52E6339B800F92118 /* Sources */,
+				E87FA9D62E6339B800F92118 /* Frameworks */,
+				E87FA9D72E6339B800F92118 /* Resources */,
+				3BE3C1D45DF23FEEF7063994 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				E87F90FC2E57F90200E5467A /* SAIWristband */,
+				E87FA9DB2E6339B800F92118 /* SAIWristband */,
 			);
 			name = SAIWristband;
 			productName = SAIWristband;
-			productReference = E87F90FA2E57F90200E5467A /* SAIWristband.app */;
+			productReference = E87FA9D92E6339B800F92118 /* SAIWristband.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E87F91062E57F90800E5467A /* SAIWristbandTests */ = {
+		E87FA9E52E6339BE00F92118 /* SAIWristbandTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E87F911E2E57F90800E5467A /* Build configuration list for PBXNativeTarget "SAIWristbandTests" */;
+			buildConfigurationList = E87FA9FD2E6339BE00F92118 /* Build configuration list for PBXNativeTarget "SAIWristbandTests" */;
 			buildPhases = (
-				771C4EB4EA0EF8BC3ACA6FC7 /* [CP] Check Pods Manifest.lock */,
-				E87F91032E57F90800E5467A /* Sources */,
-				E87F91042E57F90800E5467A /* Frameworks */,
-				E87F91052E57F90800E5467A /* Resources */,
+				B0B788AF85D104217D609234 /* [CP] Check Pods Manifest.lock */,
+				E87FA9E22E6339BE00F92118 /* Sources */,
+				E87FA9E32E6339BE00F92118 /* Frameworks */,
+				E87FA9E42E6339BE00F92118 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E87F91092E57F90800E5467A /* PBXTargetDependency */,
+				E87FA9E82E6339BE00F92118 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				E87F910A2E57F90800E5467A /* SAIWristbandTests */,
+				E87FA9E92E6339BE00F92118 /* SAIWristbandTests */,
 			);
 			name = SAIWristbandTests;
 			productName = SAIWristbandTests;
-			productReference = E87F91072E57F90800E5467A /* SAIWristbandTests.xctest */;
+			productReference = E87FA9E62E6339BE00F92118 /* SAIWristbandTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		E87F91102E57F90800E5467A /* SAIWristbandUITests */ = {
+		E87FA9EF2E6339BE00F92118 /* SAIWristbandUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E87F91212E57F90800E5467A /* Build configuration list for PBXNativeTarget "SAIWristbandUITests" */;
+			buildConfigurationList = E87FAA002E6339BE00F92118 /* Build configuration list for PBXNativeTarget "SAIWristbandUITests" */;
 			buildPhases = (
-				7237E6F9E2F83F87FF9CFC2E /* [CP] Check Pods Manifest.lock */,
-				E87F910D2E57F90800E5467A /* Sources */,
-				E87F910E2E57F90800E5467A /* Frameworks */,
-				E87F910F2E57F90800E5467A /* Resources */,
-				69E77073D5823E42B04E4823 /* [CP] Embed Pods Frameworks */,
+				67D7197450405D01629B0F7F /* [CP] Check Pods Manifest.lock */,
+				E87FA9EC2E6339BE00F92118 /* Sources */,
+				E87FA9ED2E6339BE00F92118 /* Frameworks */,
+				E87FA9EE2E6339BE00F92118 /* Resources */,
+				848D8DC00656165C5D2D7181 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				E87F91132E57F90800E5467A /* PBXTargetDependency */,
+				E87FA9F22E6339BE00F92118 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				E87F91142E57F90800E5467A /* SAIWristbandUITests */,
+				E87FA9F32E6339BE00F92118 /* SAIWristbandUITests */,
 			);
 			name = SAIWristbandUITests;
 			productName = SAIWristbandUITests;
-			productReference = E87F91112E57F90800E5467A /* SAIWristbandUITests.xctest */;
+			productReference = E87FA9F02E6339BE00F92118 /* SAIWristbandUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		E87F90F22E57F90200E5467A /* Project object */ = {
+		E87FA9D12E6339B800F92118 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
-					E87F90F92E57F90200E5467A = {
+					E87FA9D82E6339B800F92118 = {
 						CreatedOnToolsVersion = 16.4;
 					};
-					E87F91062E57F90800E5467A = {
+					E87FA9E52E6339BE00F92118 = {
 						CreatedOnToolsVersion = 16.4;
-						TestTargetID = E87F90F92E57F90200E5467A;
+						TestTargetID = E87FA9D82E6339B800F92118;
 					};
-					E87F91102E57F90800E5467A = {
+					E87FA9EF2E6339BE00F92118 = {
 						CreatedOnToolsVersion = 16.4;
-						TestTargetID = E87F90F92E57F90200E5467A;
+						TestTargetID = E87FA9D82E6339B800F92118;
 					};
 				};
 			};
-			buildConfigurationList = E87F90F52E57F90200E5467A /* Build configuration list for PBXProject "SAIWristband" */;
+			buildConfigurationList = E87FA9D42E6339B800F92118 /* Build configuration list for PBXProject "SAIWristband" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = E87F90F12E57F90200E5467A;
+			mainGroup = E87FA9D02E6339B800F92118;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = E87F90FB2E57F90200E5467A /* Products */;
+			productRefGroup = E87FA9DA2E6339B800F92118 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E87F90F92E57F90200E5467A /* SAIWristband */,
-				E87F91062E57F90800E5467A /* SAIWristbandTests */,
-				E87F91102E57F90800E5467A /* SAIWristbandUITests */,
+				E87FA9D82E6339B800F92118 /* SAIWristband */,
+				E87FA9E52E6339BE00F92118 /* SAIWristbandTests */,
+				E87FA9EF2E6339BE00F92118 /* SAIWristbandUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E87F90F82E57F90200E5467A /* Resources */ = {
+		E87FA9D72E6339B800F92118 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E87F91052E57F90800E5467A /* Resources */ = {
+		E87FA9E42E6339BE00F92118 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E87F910F2E57F90800E5467A /* Resources */ = {
+		E87FA9EE2E6339BE00F92118 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -274,72 +274,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		69E77073D5823E42B04E4823 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7237E6F9E2F83F87FF9CFC2E /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SAIWristband-SAIWristbandUITests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		771C4EB4EA0EF8BC3ACA6FC7 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SAIWristbandTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8BBA500548354D914802EFDB /* [CP] Check Pods Manifest.lock */ = {
+		1E4C217B072790F2B470C771 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -361,7 +296,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F7A57A1A34017BF215E1A95B /* [CP] Embed Pods Frameworks */ = {
+		3BE3C1D45DF23FEEF7063994 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -382,24 +317,89 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SAIWristband/Pods-SAIWristband-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		67D7197450405D01629B0F7F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SAIWristband-SAIWristbandUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		848D8DC00656165C5D2D7181 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SAIWristband-SAIWristbandUITests/Pods-SAIWristband-SAIWristbandUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B0B788AF85D104217D609234 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-SAIWristbandTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		E87F90F62E57F90200E5467A /* Sources */ = {
+		E87FA9D52E6339B800F92118 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E87F91032E57F90800E5467A /* Sources */ = {
+		E87FA9E22E6339BE00F92118 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E87F910D2E57F90800E5467A /* Sources */ = {
+		E87FA9EC2E6339BE00F92118 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -409,20 +409,20 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		E87F91092E57F90800E5467A /* PBXTargetDependency */ = {
+		E87FA9E82E6339BE00F92118 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E87F90F92E57F90200E5467A /* SAIWristband */;
-			targetProxy = E87F91082E57F90800E5467A /* PBXContainerItemProxy */;
+			target = E87FA9D82E6339B800F92118 /* SAIWristband */;
+			targetProxy = E87FA9E72E6339BE00F92118 /* PBXContainerItemProxy */;
 		};
-		E87F91132E57F90800E5467A /* PBXTargetDependency */ = {
+		E87FA9F22E6339BE00F92118 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E87F90F92E57F90200E5467A /* SAIWristband */;
-			targetProxy = E87F91122E57F90800E5467A /* PBXContainerItemProxy */;
+			target = E87FA9D82E6339B800F92118 /* SAIWristband */;
+			targetProxy = E87FA9F12E6339BE00F92118 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		E87F91192E57F90800E5467A /* Debug */ = {
+		E87FA9F82E6339BE00F92118 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -486,7 +486,7 @@
 			};
 			name = Debug;
 		};
-		E87F911A2E57F90800E5467A /* Release */ = {
+		E87FA9F92E6339BE00F92118 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -543,24 +543,25 @@
 			};
 			name = Release;
 		};
-		E87F911C2E57F90800E5467A /* Debug */ = {
+		E87FA9FB2E6339BE00F92118 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 18E151CBCAF5ECA98409A5FE /* Pods-SAIWristband.debug.xcconfig */;
+			baseConfigurationReference = 14326FE27381F2BEA70CA492 /* Pods-SAIWristband.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SAIWristband/SAIWristband.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HKMRYCX7EU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = AINNIA;
+				INFOPLIST_KEY_NFCReaderUsageDescription = "This application requires access to NFC to scan blood glucose monitoring devices, obtain blood glucose data and device information.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -574,24 +575,25 @@
 			};
 			name = Debug;
 		};
-		E87F911D2E57F90800E5467A /* Release */ = {
+		E87FA9FC2E6339BE00F92118 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2D9FB6C1F09DD91D0B749A70 /* Pods-SAIWristband.release.xcconfig */;
+			baseConfigurationReference = 2ACF61F286E4BCBAFD159FD3 /* Pods-SAIWristband.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SAIWristband/SAIWristband.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HKMRYCX7EU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = AINNIA;
+				INFOPLIST_KEY_NFCReaderUsageDescription = "This application requires access to NFC to scan blood glucose monitoring devices, obtain blood glucose data and device information.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -605,9 +607,9 @@
 			};
 			name = Release;
 		};
-		E87F911F2E57F90800E5467A /* Debug */ = {
+		E87FA9FE2E6339BE00F92118 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9E8D0AE98D4F2C395BB35E87 /* Pods-SAIWristbandTests.debug.xcconfig */;
+			baseConfigurationReference = 716DB4A01B6F20F6BD65974C /* Pods-SAIWristbandTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -625,9 +627,9 @@
 			};
 			name = Debug;
 		};
-		E87F91202E57F90800E5467A /* Release */ = {
+		E87FA9FF2E6339BE00F92118 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5B6505A7EF69FC2B0E875798 /* Pods-SAIWristbandTests.release.xcconfig */;
+			baseConfigurationReference = DAD26F5507A72EB548158C9D /* Pods-SAIWristbandTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -645,9 +647,9 @@
 			};
 			name = Release;
 		};
-		E87F91222E57F90800E5467A /* Debug */ = {
+		E87FAA012E6339BE00F92118 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9619B29FF08C596093A61741 /* Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig */;
+			baseConfigurationReference = B9B96B958B702033D0863F6B /* Pods-SAIWristband-SAIWristbandUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -663,9 +665,9 @@
 			};
 			name = Debug;
 		};
-		E87F91232E57F90800E5467A /* Release */ = {
+		E87FAA022E6339BE00F92118 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4564DAC07F88B6A4DFD1045F /* Pods-SAIWristband-SAIWristbandUITests.release.xcconfig */;
+			baseConfigurationReference = 5D761030402768185195C9B9 /* Pods-SAIWristband-SAIWristbandUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -684,43 +686,43 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E87F90F52E57F90200E5467A /* Build configuration list for PBXProject "SAIWristband" */ = {
+		E87FA9D42E6339B800F92118 /* Build configuration list for PBXProject "SAIWristband" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E87F91192E57F90800E5467A /* Debug */,
-				E87F911A2E57F90800E5467A /* Release */,
+				E87FA9F82E6339BE00F92118 /* Debug */,
+				E87FA9F92E6339BE00F92118 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E87F911B2E57F90800E5467A /* Build configuration list for PBXNativeTarget "SAIWristband" */ = {
+		E87FA9FA2E6339BE00F92118 /* Build configuration list for PBXNativeTarget "SAIWristband" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E87F911C2E57F90800E5467A /* Debug */,
-				E87F911D2E57F90800E5467A /* Release */,
+				E87FA9FB2E6339BE00F92118 /* Debug */,
+				E87FA9FC2E6339BE00F92118 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E87F911E2E57F90800E5467A /* Build configuration list for PBXNativeTarget "SAIWristbandTests" */ = {
+		E87FA9FD2E6339BE00F92118 /* Build configuration list for PBXNativeTarget "SAIWristbandTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E87F911F2E57F90800E5467A /* Debug */,
-				E87F91202E57F90800E5467A /* Release */,
+				E87FA9FE2E6339BE00F92118 /* Debug */,
+				E87FA9FF2E6339BE00F92118 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E87F91212E57F90800E5467A /* Build configuration list for PBXNativeTarget "SAIWristbandUITests" */ = {
+		E87FAA002E6339BE00F92118 /* Build configuration list for PBXNativeTarget "SAIWristbandUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E87F91222E57F90800E5467A /* Debug */,
-				E87F91232E57F90800E5467A /* Release */,
+				E87FAA012E6339BE00F92118 /* Debug */,
+				E87FAA022E6339BE00F92118 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = E87F90F22E57F90200E5467A /* Project object */;
+	rootObject = E87FA9D12E6339B800F92118 /* Project object */;
 }

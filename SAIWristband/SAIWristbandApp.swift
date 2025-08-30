@@ -2,7 +2,7 @@
 //  SAIWristbandApp.swift
 //  SAIWristband
 //
-//  Created by golfy xiong on 2025/8/22.
+//  Created by golfy xiong on 2025/8/30.
 //
 
 import SwiftUI

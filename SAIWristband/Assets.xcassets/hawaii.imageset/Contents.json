@@ -2,17 +2,17 @@
   "images" : [
     {
       "filename" : "hawaii.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "1x"
     },
     {
       "filename" : "hawaii.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "2x"
     },
     {
       "filename" : "hawaii.png",
-        "idiom" : "universal",
+      "idiom" : "universal",
       "scale" : "3x"
     }
   ],

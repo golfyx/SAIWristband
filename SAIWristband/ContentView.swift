@@ -2,23 +2,20 @@
 //  ContentView.swift
 //  SAIWristband
 //
-//  Created by golfy xiong on 2025/8/22.
+//  Created by golfy xiong on 2025/8/30.
 //
 
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var appState: AppState
-    @Environment(\.colorScheme) private var colorScheme
-    
     var body: some View {
-        Group {
-//            if appState.isLoggedIn {
-//                TabBarView()
-//            } else {
-                WelcomeView()
-//            }
+        VStack {
+            Image(systemName: "globe")
+                .imageScale(.large)
+                .foregroundStyle(.tint)
+            Text("Hello, world!")
         }
+        .padding()
     }
 }
 
