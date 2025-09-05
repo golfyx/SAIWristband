@@ -15,20 +15,10 @@ struct BloodGlucoseView: View {
     // NFC扫描器
     @StateObject private var nfcScanner = NFCScanner()
     
-    // 模拟血糖数据 - 按照设计稿精确数值
-    @State private var glucoseData: [GlucoseDataPoint] = [
-        GlucoseDataPoint(time: "00:00", value: 6.5),
-        GlucoseDataPoint(time: "03:00", value: 5.8),
-        GlucoseDataPoint(time: "06:00", value: 7.1),
-        GlucoseDataPoint(time: "09:00", value: 8.5),
-        GlucoseDataPoint(time: "12:00", value: 6.9),
-        GlucoseDataPoint(time: "15:00", value: 5.4),
-        GlucoseDataPoint(time: "16:31", value: 7.8),
-        GlucoseDataPoint(time: "21:00", value: 6.1)
-    ]
+    // 趋势数据（持久化）
+    @State private var glucoseData: [GlucoseDataPoint] = []
     
-    // Measurement result sheet state
-    @State private var showingResultSheet = false
+    // 弹框逻辑移除：不再显示测量结果弹框，直接更新趋势
     @State private var nfcScanCompleted = false
     
     var body: some View {
@@ -46,7 +36,7 @@ struct BloodGlucoseView: View {
                 // 内容区域
                 ScrollView {
                     VStack(spacing: 32) {
-                        // 最近24小时记录
+                        // 最近24小时记录（无数据时展示空态：--，图表无折线）
                         Last24HoursSection(glucoseData: glucoseData)
                             .padding(.horizontal, 20)
                         
@@ -85,26 +75,20 @@ struct BloodGlucoseView: View {
                 }
             }
             .navigationBarHidden(true)
-            .sheet(isPresented: $showingResultSheet) {
-                MeasurementResultView(glucoseReading: nfcScanner.glucoseReading)
-                    .presentationDetents([.height(400)])
-                    .presentationDragIndicator(.visible)
-            }
-            .onChange(of: showingResultSheet) { isPresented in
-                if !isPresented {
-                    // Reset state after result sheet is closed for next measurement
-                    nfcScanCompleted = false
-                    nfcScanner.resetScanState()
-                }
-            }
             .onReceive(nfcScanner.$glucoseReading) { reading in
-                if reading != nil && !nfcScanCompleted {
-                    nfcScanCompleted = true
-                    // Wait for system NFC sheet to hide before showing result sheet
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                        showingResultSheet = true
-                    }
-                }
+                guard let reading = reading else { return }
+                // 1) 将读取的当前值与历史值合并进趋势
+                let merged = mergeGlucose(reading: reading)
+                glucoseData = merged
+                // 2) 本地持久化
+                persistGlucoseData(merged)
+                // 3) 重置一次性状态
+                nfcScanCompleted = true
+                nfcScanner.resetScanState()
+            }
+            .onAppear {
+                // 启动仅加载本地缓存（无默认示例数据）
+                glucoseData = loadPersistedGlucoseData()
             }
         }
     }
@@ -157,14 +141,14 @@ struct Last24HoursSection: View {
     
     var body: some View {
         VStack(spacing: 24) {
-            // 标题
+            // 标题（始终显示）
             Text("The last 24 hours")
                 .font(.custom("Noto Sans JP", size: 15))
                 .fontWeight(.regular)
                 .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "9A1AF2"))
                 .frame(maxWidth: .infinity)
             
-            // 结果部分
+            // 结果部分（无数据时显示 --）
             HStack(spacing: 0) {
                 // 左侧：时间范围百分比
                 VStack(alignment: .center, spacing: 8) {
@@ -173,7 +157,7 @@ struct Last24HoursSection: View {
                         .fontWeight(.regular)
                         .foregroundColor(colorScheme == .dark ? Color(hex: "FFFFFF") : Color(hex: "785B97"))
                     
-                    Text("100%")
+                    Text(glucoseData.isEmpty ? "--" : "100%")
                         .font(.custom("Noto Sans JP", size: 18))
                         .fontWeight(.bold)
                         .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "4D0B6F"))
@@ -181,14 +165,14 @@ struct Last24HoursSection: View {
                 
                 Spacer()
                 
-                // 中间：最后读数
+                // 中间：最后读数时间
                 VStack(alignment: .center, spacing: 8) {
                     Text("The last reading")
                         .font(.custom("Noto Sans JP", size: 12))
                         .fontWeight(.regular)
                         .foregroundColor(colorScheme == .dark ? Color(hex: "FFFFFF") : Color(hex: "785B97"))
                     
-                    Text("17:44")
+                    Text(glucoseData.last?.time ?? "--")
                         .font(.custom("Noto Sans JP", size: 18))
                         .fontWeight(.bold)
                         .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "4D0B6F"))
@@ -203,17 +187,24 @@ struct Last24HoursSection: View {
                         .fontWeight(.regular)
                         .foregroundColor(colorScheme == .dark ? Color(hex: "FFFFFF") : Color(hex: "785B97"))
                     
-                    Text("6 mmol/L")
+                    Text(glucoseData.isEmpty ? "--" : String(format: "%.0f mmol/L", computeAverage(glucoseData)))
                         .font(.custom("Noto Sans JP", size: 21))
                         .fontWeight(.regular)
                         .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "4D0B6F"))
                 }
             }
             
-            // 折线图
+            // 折线图（无数据时仅显示背景与网格，不绘制折线）
             GlucoseChartView(glucoseData: glucoseData)
         }
     }
+}
+
+// MARK: - 汇总计算
+private func computeAverage(_ data: [GlucoseDataPoint]) -> Double {
+    guard !data.isEmpty else { return 0 }
+    let sum = data.reduce(0.0) { $0 + $1.value }
+    return sum / Double(data.count)
 }
 
 // MARK: - 血糖折线图
@@ -488,10 +479,106 @@ struct CompletionSection: View {
 }
 
 // MARK: - 血糖数据点模型
-struct GlucoseDataPoint: Identifiable {
-    let id = UUID()
+struct GlucoseDataPoint: Identifiable, Codable {
+    let id: UUID
     let time: String
     let value: Double
+    let timestamp: Date
+}
+
+// MARK: - 本地持久化与合并逻辑
+extension BloodGlucoseView {
+    private func defaultSeedData() -> [GlucoseDataPoint] {
+        let calendar = Calendar.current
+        let now = Date()
+        func make(_ hhmm: String, _ v: Double) -> GlucoseDataPoint {
+            let comps = hhmm.split(separator: ":")
+            var date = now
+            if comps.count == 2, let h = Int(comps[0]), let m = Int(comps[1]) {
+                date = calendar.date(bySettingHour: h, minute: m, second: 0, of: now) ?? now
+                // 如果设置后的时间在未来，往回推一天，保证都是过去24小时内
+                if date > now { date = calendar.date(byAdding: .day, value: -1, to: date) ?? now }
+            }
+            return GlucoseDataPoint(id: UUID(), time: hhmm, value: v, timestamp: date)
+        }
+        return [
+            make("00:00", 6.5),
+            make("03:00", 5.8),
+            make("06:00", 7.1),
+            make("09:00", 8.5),
+            make("12:00", 6.9),
+            make("15:00", 5.4),
+            make("16:31", 7.8),
+            make("21:00", 6.1)
+        ]
+    }
+    
+    private func mergeGlucose(reading: LibreGlucoseReading) -> [GlucoseDataPoint] {
+        let now = Date()
+        let cutoff = now.addingTimeInterval(-24 * 60 * 60)
+        var result: [GlucoseDataPoint] = glucoseData
+        
+        // 现有数据：先过滤到最近24小时
+        result = result.filter { $0.timestamp >= cutoff }
+        
+        // 构造新数据点（历史 + 当前）
+        var candidates: [GlucoseDataPoint] = []
+        let timeFormatter = DateFormatter()
+        timeFormatter.dateFormat = "HH:mm"
+        
+        // 历史记录
+        for h in reading.glucoseHistory {
+            let t = timeFormatter.string(from: h.timestamp)
+            let dp = GlucoseDataPoint(id: UUID(), time: t, value: h.glucose, timestamp: h.timestamp)
+            candidates.append(dp)
+        }
+        // 当前值
+        if let cg = reading.currentGlucose {
+            let t = timeFormatter.string(from: reading.timestamp)
+            let dp = GlucoseDataPoint(id: UUID(), time: t, value: cg, timestamp: reading.timestamp)
+            candidates.append(dp)
+        }
+        
+        // 合并去重：以精确到分钟的时间戳作为键，保留较新的
+        var keyed: [String: GlucoseDataPoint] = [:]
+        let minuteFormatter = DateFormatter()
+        minuteFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        
+        for p in result { keyed[minuteFormatter.string(from: p.timestamp)] = p }
+        for c in candidates {
+            let key = minuteFormatter.string(from: c.timestamp)
+            if let exist = keyed[key] {
+                // 取较新者（通常相等），这里偏向新读数
+                if c.timestamp >= exist.timestamp { keyed[key] = c }
+            } else {
+                keyed[key] = c
+            }
+        }
+        
+        // 排序并仅保留24小时内
+        let merged = keyed.values.filter { $0.timestamp >= cutoff }.sorted { $0.timestamp < $1.timestamp }
+        return merged
+    }
+    
+    private func persistGlucoseData(_ points: [GlucoseDataPoint]) {
+        do {
+            let data = try JSONEncoder().encode(points)
+            UserDefaults.standard.set(data, forKey: "glucoseTrendData")
+        } catch {
+            print("Persist glucoseTrendData failed: \(error)")
+        }
+    }
+    
+    private func loadPersistedGlucoseData() -> [GlucoseDataPoint] {
+        guard let data = UserDefaults.standard.data(forKey: "glucoseTrendData") else { return [] }
+        do {
+            let points = try JSONDecoder().decode([GlucoseDataPoint].self, from: data)
+            return points
+        } catch {
+            print("Load glucoseTrendData failed: \(error)")
+            return []
+        }
+    }
 }
 
 // MARK: - Measurement Result Sheet View
