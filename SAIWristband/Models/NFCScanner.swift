@@ -8,6 +8,7 @@
 import Foundation
 import CoreNFC
 import SwiftUI
+import Combine
 
 @MainActor
 class NFCScanner: NSObject, ObservableObject {
@@ -19,6 +20,10 @@ class NFCScanner: NSObject, ObservableObject {
     @Published var glucoseReading: LibreGlucoseReading?
     @Published var batteryLevel: Int?
     @Published var sensorStatus: String = ""
+    @Published var isMinimalReadMode: Bool = true // 默认使用最小化读取模式
+    
+    // Libre NFC管理器
+    private let libreNFCManager = LibreNFCManager()
     
     private var nfcSession: NFCNDEFReaderSession?
     private var retryCount = 0
@@ -27,7 +32,39 @@ class NFCScanner: NSObject, ObservableObject {
     override init() {
         super.init()
         checkNFCAvailability()
+        setupLibreManagerObservers()
     }
+    
+    private func setupLibreManagerObservers() {
+        // 监听Libre NFC管理器的状态变化
+        libreNFCManager.$isScanning
+            .assign(to: &$isScanning)
+        
+        libreNFCManager.$scanError
+            .assign(to: &$scanError)
+        
+        libreNFCManager.$debugInfo
+            .assign(to: &$debugInfo)
+        
+        libreNFCManager.$glucoseReading
+            .assign(to: &$glucoseReading)
+        
+        // 同步最小化读取模式设置
+        $isMinimalReadMode
+            .assign(to: \.isMinimalReadMode, on: libreNFCManager)
+            .store(in: &cancellables)
+        
+        // 从传感器信息提取电池电量和状态
+        libreNFCManager.$sensorInfo
+            .map { $0?.batteryLevel }
+            .assign(to: &$batteryLevel)
+        
+        libreNFCManager.$sensorInfo
+            .map { $0?.state.description ?? "Unknown" }
+            .assign(to: &$sensorStatus)
+    }
+    
+    private var cancellables = Set<AnyCancellable>()
     
     private func checkNFCAvailability() {
         // 检查NFC是否可用
@@ -87,34 +124,35 @@ class NFCScanner: NSObject, ObservableObject {
             return
         }
         
-        isScanning = true
+        // 重置状态
         scanError = ""
         scannedData = ""
         glucoseReading = nil
         batteryLevel = nil
         sensorStatus = ""
-        debugInfo += "\n\nStarting Abbott FreeStyle Libre NFC scan (Attempt \(retryCount + 1)/\(maxRetries + 1))..."
+        retryCount = 0
         
-        // 创建NFC会话
-        nfcSession = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
-        nfcSession?.alertMessage = "Hold iPhone near Abbott FreeStyle Libre sensor"
-        nfcSession?.begin()
+        debugInfo += "\n\n🚀 ============ REAL SENSOR MODE ============"
+        debugInfo += "\n🏥 Starting Abbott FreeStyle Libre NFC scan with REAL sensor"
+        debugInfo += "\n📱 Supported sensors: Libre 1, Libre 2, Libre 3"
+        debugInfo += "\n🔬 This will attempt to read ACTUAL data from your Abbott sensor"
+        debugInfo += "\n💡 Uses basic TAG permissions (compatible with DiaBLE approach)"
+        debugInfo += isMinimalReadMode ? 
+            "\n🎯 MINIMAL READ MODE: Current glucose only (prevents disconnection)" :
+            "\n📚 FULL READ MODE: Complete history (may cause disconnection)"
+        debugInfo += "\n📋 Process: Connect → Read System Info → Read Data → Parse"
+        debugInfo += "\n⚠️ Make sure your sensor is active and within range"
+        debugInfo += "\n===============================================\n"
         
-        debugInfo += "\nNFC session created and started for Abbott FreeStyle Libre"
-        
-        // 模拟3秒后检测到Abbott传感器
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            if self.isScanning {
-                self.simulateAbbottSensorReading()
-                self.nfcSession?.invalidate()
-            }
-        }
+        // 使用真实的Libre NFC管理器
+        libreNFCManager.startScanning()
     }
     
     func stopScanning() {
         nfcSession?.invalidate()
+        libreNFCManager.stopScanning()
         isScanning = false
-        debugInfo += "\nNFC scan stopped"
+        debugInfo += "\n⏹️ NFC scan stopped"
     }
     
     func resetScanState() {
@@ -143,52 +181,23 @@ class NFCScanner: NSObject, ObservableObject {
         }
     }
     
-    // 模拟Abbott传感器数据读取（在没有ISO7816权限时使用）
-    private func simulateAbbottSensorReading() {
-        debugInfo += "\n正在模拟Abbott FreeStyle Libre传感器读取..."
-        debugInfo += "\n检测到Abbott传感器，开始读取数据..."
-        
-        // 模拟血糖历史数据
-        var historyData: [HistoricalGlucose] = []
-        let baseTime = Date().timeIntervalSince1970 - 8 * 3600 // 8小时前
-        
-        for i in 0..<32 {
-            let timestamp = Date(timeIntervalSince1970: baseTime + Double(i * 15 * 60)) // 每15分钟一个记录
-            let baseGlucose = 6.5 + sin(Double(i) * 0.3) * 1.5 // 模拟血糖波动
-            let glucose = max(4.0, min(10.0, baseGlucose + Double.random(in: -0.5...0.5)))
-            
-            historyData.append(HistoricalGlucose(glucose: glucose, timestamp: timestamp))
-        }
-        
-        // 当前血糖值（最新的历史记录 + 一些变化）
-        let lastGlucose = historyData.last?.glucose ?? 6.5
-        let currentGlucose = max(4.0, min(10.0, lastGlucose + Double.random(in: -0.3...0.3)))
-        
-        // 计算趋势方向
-        let trendDirection = calculateTrendDirection(from: historyData)
-        
-        // 模拟传感器状态
-        batteryLevel = Int.random(in: 75...95)
-        sensorStatus = "正常工作"
-        
-        // 创建血糖读数对象
-        glucoseReading = LibreGlucoseReading(
-            currentGlucose: currentGlucose,
-            timestamp: Date(),
-            trendDirection: trendDirection,
-            glucoseHistory: historyData.sorted { $0.timestamp > $1.timestamp },
-            sensorAge: Int.random(in: 1440...10080), // 1-7天的传感器年龄（分钟）
-            batteryLevel: batteryLevel
-        )
-        
-        debugInfo += "\n模拟数据生成完成！当前血糖: \(String(format: "%.1f", currentGlucose)) mmol/L"
-        debugInfo += "\n历史记录: \(historyData.count) 个数据点"
-        debugInfo += "\n趋势: \(trendDirection.rawValue)"
-        debugInfo += "\n电池电量: \(batteryLevel ?? 0)%, 传感器状态: \(sensorStatus)"
-        
-        scanError = ""
-        isScanning = false
+    func toggleReadMode() {
+        isMinimalReadMode.toggle()
+        debugInfo += isMinimalReadMode ? 
+            "\n🎯 Switched to MINIMAL READ mode (prevents disconnection)" :
+            "\n📚 Switched to FULL READ mode (complete history)"
     }
+    
+    func enableMinimalReadMode() {
+        isMinimalReadMode = true
+        debugInfo += "\n🎯 Enabled MINIMAL READ mode to prevent connection loss"
+    }
+    
+    func enableFullReadMode() {
+        isMinimalReadMode = false
+        debugInfo += "\n📚 Enabled FULL READ mode for complete glucose history"
+    }
+    
     
     // 计算血糖趋势方向
     private func calculateTrendDirection(from history: [HistoricalGlucose]) -> TrendDirection {

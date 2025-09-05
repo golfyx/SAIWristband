@@ -50,10 +50,31 @@ struct BloodGlucoseView: View {
                         Last24HoursSection(glucoseData: glucoseData)
                             .padding(.horizontal, 20)
                         
-                        // Measurement Button
-                        ScanButtonSection {
-                            // Directly start NFC scanning
-                            nfcScanner.startScanning()
+                        // Measurement Button Section
+                        VStack(spacing: 16) {
+                            // Information text for real sensor mode
+                            VStack(spacing: 8) {
+                                Text("🏥 Abbott Sensor Reader")
+                                    .font(.custom("Montserrat", size: 16))
+                                    .fontWeight(.medium)
+                                    .foregroundColor(AppTheme.primaryText(colorScheme))
+                                
+                                Text("Hold your iPhone near the Abbott FreeStyle Libre sensor to read glucose data")
+                                    .font(.custom("Noto Sans JP", size: 12))
+                                    .foregroundColor(AppTheme.secondaryText(colorScheme))
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 20)
+                            }
+                            
+                            // Reading Mode Toggle
+                            ReadingModeToggle(nfcScanner: nfcScanner)
+                                .padding(.horizontal, 20)
+                            
+                            // Measurement Button
+                            ScanButtonSection {
+                                // Start NFC scanning
+                                nfcScanner.startScanning()
+                            }
                         }
                         
                         // 完成度
@@ -607,6 +628,83 @@ struct MeasurementResultView: View {
             )
             .stroke(Color.white.opacity(0.1), lineWidth: 1)
         )
+    }
+}
+
+// MARK: - 读取模式切换组件
+struct ReadingModeToggle: View {
+    @ObservedObject var nfcScanner: NFCScanner
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Text("读取模式")
+                    .font(.custom("Montserrat", size: 14))
+                    .fontWeight(.medium)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
+                
+                Spacer()
+                
+                HStack(spacing: 8) {
+                    Text(nfcScanner.isMinimalReadMode ? "实时" : "完整")
+                        .font(.custom("Noto Sans JP", size: 12))
+                        .foregroundColor(AppTheme.secondaryText(colorScheme))
+                    
+                    Toggle("", isOn: Binding(
+                        get: { !nfcScanner.isMinimalReadMode },
+                        set: { _ in nfcScanner.toggleReadMode() }
+                    ))
+                    .labelsHidden()
+                    .scaleEffect(0.8)
+                }
+            }
+            
+            // 模式说明
+            VStack(alignment: .leading, spacing: 4) {
+                if nfcScanner.isMinimalReadMode {
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("🎯")
+                            .font(.caption)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("实时模式（推荐）")
+                                .font(.custom("Noto Sans JP", size: 11))
+                                .fontWeight(.medium)
+                                .foregroundColor(AppTheme.accent)
+                            Text("只读取当前血糖值，避免连接丢失")
+                                .font(.custom("Noto Sans JP", size: 10))
+                                .foregroundColor(AppTheme.secondaryText(colorScheme))
+                        }
+                        Spacer()
+                    }
+                } else {
+                    HStack(alignment: .top, spacing: 8) {
+                        Text("📚")
+                            .font(.caption)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("完整模式")
+                                .font(.custom("Noto Sans JP", size: 11))
+                                .fontWeight(.medium)
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
+                            Text("读取完整历史数据，可能导致连接丢失")
+                                .font(.custom("Noto Sans JP", size: 10))
+                                .foregroundColor(Color.orange)
+                        }
+                        Spacer()
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(nfcScanner.isMinimalReadMode ? 
+                          AppTheme.accent.opacity(0.1) : 
+                          Color.orange.opacity(0.1)
+                    )
+            )
+        }
+        .padding(.vertical, 8)
     }
 }
 
