@@ -18,6 +18,59 @@ struct HomeView: View {
     @EnvironmentObject var appState: AppState
     @Environment(\.colorScheme) private var colorScheme
     
+    // 加载并刷新首页血糖概要
+    private func refreshGlucoseSummary() {
+        guard let latest = loadLatestGlucose() else { return }
+        let value = latest.value
+        let status = glucoseStatus(for: value)
+        let timeString = timeFormatter.string(from: latest.timestamp)
+        let valueString = String(format: "%.1f", value)
+        
+        var updated: [HealthSummary] = []
+        updated.reserveCapacity(healthData.count)
+        for item in healthData {
+            if item.type == .bloodSugar {
+                updated.append(
+                    HealthSummary(
+                        type: .bloodSugar,
+                        value: valueString,
+                        unit: "mmol/L",
+                        status: status,
+                        time: timeString,
+                        icon: item.icon,
+                        chartImage: item.chartImage
+                    )
+                )
+            } else {
+                updated.append(item)
+            }
+        }
+        healthData = updated
+    }
+    
+    private func loadLatestGlucose() -> (value: Double, timestamp: Date)? {
+        guard let data = UserDefaults.standard.data(forKey: "glucoseTrendData") else { return nil }
+        do {
+            let points = try JSONDecoder().decode([GlucoseDataPoint].self, from: data)
+            guard let latest = points.max(by: { $0.timestamp < $1.timestamp }) else { return nil }
+            return (latest.value, latest.timestamp)
+        } catch {
+            return nil
+        }
+    }
+    
+    private func glucoseStatus(for value: Double) -> HealthStatus {
+        if value < 3.0 || value > 13.9 { return .critical }
+        if value < 3.9 || value > 10.0 { return .warning }
+        return .normal
+    }
+    
+    private var timeFormatter: DateFormatter {
+        let df = DateFormatter()
+        df.dateFormat = "HH:mm"
+        return df
+    }
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -58,6 +111,12 @@ struct HomeView: View {
             }
             .background(AppTheme.background(colorScheme))
             .navigationBarHidden(true)
+            .onAppear {
+                refreshGlucoseSummary()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .glucoseTrendDataUpdated)) { _ in
+                refreshGlucoseSummary()
+            }
             .sheet(isPresented: $showingProfile) {
                 ProfileView()
                     .environmentObject(appState)

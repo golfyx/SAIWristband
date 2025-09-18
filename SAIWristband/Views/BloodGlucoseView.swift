@@ -60,10 +60,33 @@ struct BloodGlucoseView: View {
                             ReadingModeToggle(nfcScanner: nfcScanner)
                                 .padding(.horizontal, 20)
                             
-                            // Measurement Button
-                            ScanButtonSection {
-                                // Start NFC scanning
-                                nfcScanner.startScanning()
+                            // Buttons Section
+                            HStack(spacing: 16) {
+                                // History Button
+                                NavigationLink(destination: BloodGlucoseHistoryView()) {
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "list.bullet.clipboard")
+                                            .font(.system(size: 16, weight: .medium))
+                                            .foregroundColor(.white)
+                                        
+                                        Text("History")
+                                            .font(.custom("Montserrat", size: 13))
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.white)
+                                    }
+                                    .padding(.vertical, 8)
+                                    .frame(width: 110, height: 32)
+                                    .background(Color(red: 0.40, green: 0.10, blue: 0.85))
+                                    .cornerRadius(16)
+                                    .shadow(color: Color.black.opacity(0.08), radius: 0, x: 0, y: 0)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                
+                                // Measurement Button
+                                ScanButtonSection {
+                                    // Start NFC scanning
+                                    nfcScanner.startScanning()
+                                }
                             }
                         }
                         
@@ -89,6 +112,9 @@ struct BloodGlucoseView: View {
             .onAppear {
                 // 启动仅加载本地缓存（无默认示例数据）
                 glucoseData = loadPersistedGlucoseData()
+                
+                // 将现有数据迁移到历史存储中（如果还没有迁移的话）
+                migrateExistingDataToHistory()
             }
         }
     }
@@ -187,7 +213,7 @@ struct Last24HoursSection: View {
                         .fontWeight(.regular)
                         .foregroundColor(colorScheme == .dark ? Color(hex: "FFFFFF") : Color(hex: "785B97"))
                     
-                    Text(glucoseData.isEmpty ? "--" : String(format: "%.0f mmol/L", computeAverage(glucoseData)))
+                    Text(glucoseData.isEmpty ? "--" : String(format: "%.1f mmol/L", computeAverage(glucoseData)))
                         .font(.custom("Noto Sans JP", size: 21))
                         .fontWeight(.regular)
                         .foregroundColor(colorScheme == .dark ? Color(hex: "9A1AF2") : Color(hex: "4D0B6F"))
@@ -515,10 +541,10 @@ extension BloodGlucoseView {
     
     private func mergeGlucose(reading: LibreGlucoseReading) -> [GlucoseDataPoint] {
         let now = Date()
-        let cutoff = now.addingTimeInterval(-24 * 60 * 60)
+        let cutoff = now.addingTimeInterval(-24 * 60 * 60) // 24小时前，用于显示
         var result: [GlucoseDataPoint] = glucoseData
         
-        // 现有数据：先过滤到最近24小时
+        // 现有数据：先过滤到最近24小时（仅用于当前界面显示）
         result = result.filter { $0.timestamp >= cutoff }
         
         // 构造新数据点（历史 + 当前）
@@ -564,8 +590,60 @@ extension BloodGlucoseView {
         do {
             let data = try JSONEncoder().encode(points)
             UserDefaults.standard.set(data, forKey: "glucoseTrendData")
+            
+            // 同时保存到14天历史数据中
+            persistHistoricalGlucoseData(points)
+            
+            // 通知首页等界面更新概要展示
+            NotificationCenter.default.post(name: .glucoseTrendDataUpdated, object: nil)
         } catch {
             print("Persist glucoseTrendData failed: \(error)")
+        }
+    }
+    
+    // 保存14天历史数据
+    private func persistHistoricalGlucoseData(_ newPoints: [GlucoseDataPoint]) {
+        do {
+            // 加载现有的历史数据
+            var historicalData = loadHistoricalGlucoseData()
+            
+            // 合并新数据
+            let now = Date()
+            let fourteenDaysAgo = now.addingTimeInterval(-14 * 24 * 60 * 60)
+            
+            // 移除超过14天的数据
+            historicalData = historicalData.filter { $0.timestamp >= fourteenDaysAgo }
+            
+            // 合并新数据点（去重）
+            var keyed: [String: GlucoseDataPoint] = [:]
+            let minuteFormatter = DateFormatter()
+            minuteFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+            
+            // 现有历史数据
+            for point in historicalData {
+                keyed[minuteFormatter.string(from: point.timestamp)] = point
+            }
+            
+            // 新数据点
+            for point in newPoints {
+                let key = minuteFormatter.string(from: point.timestamp)
+                if let existing = keyed[key] {
+                    // 保留较新的数据
+                    if point.timestamp >= existing.timestamp {
+                        keyed[key] = point
+                    }
+                } else {
+                    keyed[key] = point
+                }
+            }
+            
+            // 排序并保存
+            let mergedData = keyed.values.sorted { $0.timestamp < $1.timestamp }
+            let data = try JSONEncoder().encode(mergedData)
+            UserDefaults.standard.set(data, forKey: "glucoseHistoricalData")
+            
+        } catch {
+            print("Persist historical glucose data failed: \(error)")
         }
     }
     
@@ -579,6 +657,43 @@ extension BloodGlucoseView {
             return []
         }
     }
+    
+    // 加载14天历史数据
+    private func loadHistoricalGlucoseData() -> [GlucoseDataPoint] {
+        guard let data = UserDefaults.standard.data(forKey: "glucoseHistoricalData") else { return [] }
+        do {
+            let points = try JSONDecoder().decode([GlucoseDataPoint].self, from: data)
+            return points
+        } catch {
+            print("Load historical glucose data failed: \(error)")
+            return []
+        }
+    }
+    
+    // 将现有的24小时数据迁移到14天历史存储中
+    private func migrateExistingDataToHistory() {
+        // 检查是否已经迁移过
+        let migrationKey = "glucoseDataMigrated"
+        if UserDefaults.standard.bool(forKey: migrationKey) {
+            return
+        }
+        
+        // 获取现有的24小时数据
+        let existingData = loadPersistedGlucoseData()
+        if !existingData.isEmpty {
+            // 将现有数据保存到历史存储中
+            persistHistoricalGlucoseData(existingData)
+            print("Migrated \(existingData.count) existing glucose data points to historical storage")
+        }
+        
+        // 标记已迁移
+        UserDefaults.standard.set(true, forKey: migrationKey)
+    }
+}
+
+// MARK: - 通知名称定义
+extension Notification.Name {
+    static let glucoseTrendDataUpdated = Notification.Name("glucoseTrendDataUpdated")
 }
 
 // MARK: - Measurement Result Sheet View
@@ -726,7 +841,7 @@ struct ReadingModeToggle: View {
     var body: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("读取模式")
+                Text("Reading Mode")
                     .font(.custom("Montserrat", size: 14))
                     .fontWeight(.medium)
                     .foregroundColor(AppTheme.primaryText(colorScheme))
@@ -734,7 +849,7 @@ struct ReadingModeToggle: View {
                 Spacer()
                 
                 HStack(spacing: 8) {
-                    Text(nfcScanner.isMinimalReadMode ? "实时" : "完整")
+                    Text(nfcScanner.isMinimalReadMode ? "Real-time" : "Full")
                         .font(.custom("Noto Sans JP", size: 12))
                         .foregroundColor(AppTheme.secondaryText(colorScheme))
                     
@@ -754,11 +869,11 @@ struct ReadingModeToggle: View {
                         Text("🎯")
                             .font(.caption)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("实时模式（推荐）")
+                            Text("Real-time Mode (Recommended)")
                                 .font(.custom("Noto Sans JP", size: 11))
                                 .fontWeight(.medium)
                                 .foregroundColor(AppTheme.accent)
-                            Text("只读取当前血糖值，避免连接丢失")
+                            Text("Reads current glucose only to reduce connection drops")
                                 .font(.custom("Noto Sans JP", size: 10))
                                 .foregroundColor(AppTheme.secondaryText(colorScheme))
                         }
@@ -769,11 +884,11 @@ struct ReadingModeToggle: View {
                         Text("📚")
                             .font(.caption)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("完整模式")
+                            Text("Full Mode")
                                 .font(.custom("Noto Sans JP", size: 11))
                                 .fontWeight(.medium)
                                 .foregroundColor(AppTheme.primaryText(colorScheme))
-                            Text("读取完整历史数据，可能导致连接丢失")
+                            Text("Reads full history, may cause connection drops")
                                 .font(.custom("Noto Sans JP", size: 10))
                                 .foregroundColor(Color.orange)
                         }
@@ -792,6 +907,277 @@ struct ReadingModeToggle: View {
             )
         }
         .padding(.vertical, 8)
+    }
+}
+
+// MARK: - 血糖历史记录视图
+struct BloodGlucoseHistoryView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
+    @State private var historicalData: [GlucoseDataPoint] = []
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // 自定义导航栏
+            CustomHistoryNavigationBar(onBack: {
+                dismiss()
+            })
+            
+            // 分割线
+            Divider()
+                .background(Color.gray.opacity(0.3))
+            
+            // 内容区域
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    if historicalData.isEmpty {
+                        // 空状态
+                        VStack(spacing: 16) {
+                            Image(systemName: "chart.line.uptrend.xyaxis")
+                                .font(.system(size: 60))
+                                .foregroundColor(AppTheme.secondaryText(colorScheme))
+                                .padding(.top, 60)
+                            
+                            Text("No history yet")
+                                .font(.custom("Noto Sans JP", size: 18))
+                                .fontWeight(.medium)
+                                .foregroundColor(AppTheme.primaryText(colorScheme))
+                            
+                            Text("Your measurements will appear here once available")
+                                .font(.custom("Noto Sans JP", size: 14))
+                                .foregroundColor(AppTheme.secondaryText(colorScheme))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 40)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 100)
+                    } else {
+                        // 按日期分组显示数据
+                        ForEach(groupedDataByDate, id: \.key) { dateGroup in
+                            VStack(spacing: 12) {
+                                // Date header
+                                HStack {
+                                    Text(dateGroup.key)
+                                        .font(.custom("Montserrat", size: 16))
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(AppTheme.primaryText(colorScheme))
+                                    
+                                    Spacer()
+                                    
+                                    Text("\(dateGroup.value.count) records")
+                                        .font(.custom("Noto Sans JP", size: 12))
+                                        .foregroundColor(AppTheme.secondaryText(colorScheme))
+                                }
+                                .padding(.horizontal, 20)
+                                
+                                // 该日期的测量记录
+                                VStack(spacing: 8) {
+                                    ForEach(dateGroup.value, id: \.id) { dataPoint in
+                                        HistoryDataRow(dataPoint: dataPoint)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                            }
+                        }
+                    }
+                }
+                .padding(.top, 24)
+                .padding(.bottom, 40)
+            }
+        }
+        .navigationBarHidden(true)
+        .onAppear {
+            // 先执行一次数据迁移（确保现有数据被包含）
+            migrateExistingDataIfNeeded()
+            // 然后加载历史数据
+            loadHistoricalData()
+        }
+    }
+    
+    // 按日期分组数据
+    private var groupedDataByDate: [(key: String, value: [GlucoseDataPoint])] {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "MMM dd, yyyy"
+        dateFormatter.locale = Locale(identifier: "zh_CN")
+        
+        let grouped = Dictionary(grouping: historicalData) { dataPoint in
+            dateFormatter.string(from: dataPoint.timestamp)
+        }
+        
+        return grouped.sorted { first, second in
+            // 按日期降序排列（最新的在前）
+            guard let firstDate = dateFormatter.date(from: first.key),
+                  let secondDate = dateFormatter.date(from: second.key) else {
+                return false
+            }
+            return firstDate > secondDate
+        }
+    }
+    
+    private func loadHistoricalData() {
+        var allData: [GlucoseDataPoint] = []
+        
+        // 首先尝试加载14天历史数据
+        if let historicalData = UserDefaults.standard.data(forKey: "glucoseHistoricalData") {
+            do {
+                let points = try JSONDecoder().decode([GlucoseDataPoint].self, from: historicalData)
+                allData.append(contentsOf: points)
+            } catch {
+                print("Load historical glucose data failed: \(error)")
+            }
+        }
+        
+        // 如果历史数据为空，尝试加载24小时数据作为备用
+        if allData.isEmpty {
+            if let trendData = UserDefaults.standard.data(forKey: "glucoseTrendData") {
+                do {
+                    let points = try JSONDecoder().decode([GlucoseDataPoint].self, from: trendData)
+                    allData.append(contentsOf: points)
+                    print("Loaded \(points.count) data points from trend data as fallback")
+                } catch {
+                    print("Load trend glucose data failed: \(error)")
+                }
+            }
+        }
+        
+        // 去重并按时间倒序排列（最新的在前）
+        let uniqueData = Dictionary(grouping: allData) { point in
+            let formatter = DateFormatter()
+            formatter.dateFormat = "yyyy-MM-dd HH:mm"
+            return formatter.string(from: point.timestamp)
+        }.compactMapValues { $0.first }
+        
+        historicalData = uniqueData.values.sorted { $0.timestamp > $1.timestamp }
+        
+        print("Loaded \(historicalData.count) total historical data points")
+    }
+    
+    // 在历史记录视图中执行数据迁移
+    private func migrateExistingDataIfNeeded() {
+        // 检查是否有历史数据
+        let hasHistoricalData = UserDefaults.standard.data(forKey: "glucoseHistoricalData") != nil
+        
+        // 如果没有历史数据，但有趋势数据，则进行迁移
+        if !hasHistoricalData {
+            if let trendData = UserDefaults.standard.data(forKey: "glucoseTrendData") {
+                do {
+                    let points = try JSONDecoder().decode([GlucoseDataPoint].self, from: trendData)
+                    if !points.isEmpty {
+                        // 保存到历史数据中
+                        let historicalData = try JSONEncoder().encode(points)
+                        UserDefaults.standard.set(historicalData, forKey: "glucoseHistoricalData")
+                        print("Migrated \(points.count) existing data points to historical storage")
+                    }
+                } catch {
+                    print("Migration failed: \(error)")
+                }
+            }
+        }
+    }
+}
+
+// MARK: - 历史记录导航栏
+struct CustomHistoryNavigationBar: View {
+    let onBack: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        HStack {
+            // 返回按钮
+            Button(action: onBack) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
+                    .frame(width: 44, height: 44)
+                    .background(AppTheme.cardBackground(colorScheme))
+                    .clipShape(Circle())
+                    .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+            }
+            
+            Spacer()
+            
+            // Title
+            Text("Blood Glucose History")
+                .font(.custom("Montserrat", size: 18))
+                .fontWeight(.regular)
+                .foregroundColor(AppTheme.primaryText(colorScheme))
+            
+            Spacer()
+            
+            // 占位视图保持对称
+            Color.clear
+                .frame(width: 44, height: 44)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
+        .padding(.bottom, 16)
+        .background(AppTheme.cardBackground(colorScheme))
+        .glassBackground(RoundedRectangle(cornerRadius: 0))
+    }
+}
+
+// MARK: - 历史数据行
+struct HistoryDataRow: View {
+    let dataPoint: GlucoseDataPoint
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // 时间
+            VStack(alignment: .leading, spacing: 2) {
+                Text(dataPoint.time)
+                    .font(.custom("Roboto Mono", size: 16))
+                    .fontWeight(.semibold)
+                    .foregroundColor(AppTheme.primaryText(colorScheme))
+                
+                Text(formatTimestamp(dataPoint.timestamp))
+                    .font(.custom("Noto Sans JP", size: 11))
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
+            }
+            
+            Spacer()
+            
+            // 血糖值
+            HStack(spacing: 8) {
+                Text(String(format: "%.1f", dataPoint.value))
+                    .font(.custom("Roboto Mono", size: 20))
+                    .fontWeight(.bold)
+                    .foregroundColor(glucoseValueColor(dataPoint.value))
+                
+                Text("mmol/L")
+                    .font(.custom("Noto Sans JP", size: 12))
+                    .fontWeight(.medium)
+                    .foregroundColor(AppTheme.secondaryText(colorScheme))
+            }
+            
+            // 状态指示器
+            Circle()
+                .fill(glucoseValueColor(dataPoint.value))
+                .frame(width: 8, height: 8)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(AppTheme.cardBackground(colorScheme))
+        .cornerRadius(12)
+        .shadow(color: Color.black.opacity(0.05), radius: 2, x: 0, y: 1)
+    }
+    
+    private func formatTimestamp(_ timestamp: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(from: timestamp)
+    }
+    
+    private func glucoseValueColor(_ value: Double) -> Color {
+        switch value {
+        case 0..<3.9:
+            return Color.red // 低血糖
+        case 3.9...10.0:
+            return Color.green // 正常范围
+        default:
+            return Color.orange // 高血糖
+        }
     }
 }
 
