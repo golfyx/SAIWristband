@@ -112,23 +112,7 @@ struct TabBarButton: View {
     }
 }
 
-// MARK: - 占位符视图
-struct HealthView: View {
-    @Environment(\.colorScheme) private var colorScheme
-    var body: some View {
-        VStack {
-            Text("Health")
-                .font(.largeTitle)
-                .padding()
-            Text("健康页面正在开发中...")
-                .font(.body)
-                .foregroundColor(AppTheme.secondaryText(colorScheme))
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(AppTheme.background(colorScheme))
-    }
-}
-
+// 所有HealthView相关组件现在都在独立的HealthView.swift文件中实现
 // 所有SharingView相关组件现在都在独立的SharingView.swift文件中实现
 
 #Preview {
